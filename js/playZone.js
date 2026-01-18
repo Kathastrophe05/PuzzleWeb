@@ -146,33 +146,182 @@ document.addEventListener('DOMContentLoaded', function () {
   // Fallback-Objekt für Drag-Informationen (sicherer als allein dataTransfer)
   let currentDrag = null;
 
-  function getPlacements() {
-    let placements;
-    try { placements = JSON.parse(localStorage.getItem(PLACEMENTS_KEY) || '[]'); } catch (e) { placements = []; }
-    return Array.isArray(placements) ? placements : [];
+  // --- Touch drag state and helpers ---
+  const touchState = {
+    active: false,
+    id: null,
+    startX: 0,
+    startY: 0,
+    dragging: false,
+    from: null,
+    pieceIndex: null,
+    cellIndex: null,
+    sourceEl: null,
+    ghost: null
+  };
+
+  function createTouchGhost(src, x, y) {
+    removeTouchGhost();
+    if (!src) return;
+    const img = document.createElement('img');
+    img.src = src;
+    img.className = 'drag-ghost';
+    img.style.left = (x - 40) + 'px';
+    img.style.top = (y - 40) + 'px';
+    document.body.appendChild(img);
+    img.onload = () => {
+      img.style.left = (x - img.width / 2) + 'px';
+      img.style.top = (y - img.height / 2) + 'px';
+    };
+    touchState.ghost = img;
   }
 
-  // Check whether the puzzle is solved: every placement matches pieces in original order
-  function checkSolved() {
-    if (!pieces || !pieces.length) return false;
-    const placements = getPlacements();
-    if (!Array.isArray(placements) || placements.length !== pieces.length) return false;
-    for (let i = 0; i < pieces.length; i++) {
-      if (!placements[i]) return false; // empty cell
-      if (placements[i] !== pieces[i]) return false; // mismatch
-    }
-    // all match
-    if (victoryModal && !victoryShown) {
-      victoryShown = true;
-      try { victoryModal.show(); } catch (e) { alert('Herzlichen Glückwunsch! Puzzle gelöst.'); }
-    }
-    return true;
+  function moveTouchGhost(x, y) {
+    if (!touchState.ghost) return;
+    touchState.ghost.style.left = (x - touchState.ghost.width / 2) + 'px';
+    touchState.ghost.style.top = (y - touchState.ghost.height / 2) + 'px';
   }
 
-  function setPlacements(arr) {
-    localStorage.setItem(PLACEMENTS_KEY, JSON.stringify(arr));
-    // after updating placements, check if solved
-    try { checkSolved(); } catch (e) { console.error('checkSolved failed', e); }
+  function removeTouchGhost() {
+    if (touchState.ghost && touchState.ghost.parentNode) {
+      touchState.ghost.parentNode.removeChild(touchState.ghost);
+    }
+    touchState.ghost = null;
+  }
+
+  function clearDropTargets() {
+    document.querySelectorAll('.puzzle-cell.drop-target, #thumbs.drop-target, .thumbs-container.drop-target').forEach(el => el.classList.remove('drop-target'));
+  }
+
+  function findCellFromPoint(x, y) {
+    const el = document.elementFromPoint(x, y);
+    if (!el) return null;
+    return el.closest('.puzzle-cell');
+  }
+
+  function isOverThumbsArea(x, y) {
+    let el = document.elementFromPoint(x, y);
+    if (!el) return false;
+    return !!el.closest('#thumbs') || !!el.closest('.thumbs-container');
+  }
+
+  function performDropLogic({ from, pieceIndex, sourceCellIndex, targetCellEl }) {
+    const n = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : 0;
+    if (!targetCellEl) return;
+    const targetIdx = parseInt(targetCellEl.getAttribute('data-cell-index'), 10);
+    if (isNaN(targetIdx)) return;
+    let placements = getPlacements();
+    if (from === 'thumbs') {
+      placements[targetIdx] = pieces[pieceIndex];
+    } else if (from === 'grid') {
+      const sourceIdx = Number.isFinite(sourceCellIndex) ? sourceCellIndex : null;
+      if (sourceIdx !== null && !isNaN(sourceIdx) && sourceIdx !== targetIdx) {
+        const temp = placements[targetIdx];
+        placements[targetIdx] = placements[sourceIdx];
+        placements[sourceIdx] = temp;
+      }
+    }
+    setPlacements(placements);
+    renderPieceThumbs();
+    createGrid(n);
+  }
+
+  function handleTouchStartGeneric(e, from, pieceIndex, cellIndex, sourceEl) {
+    if (!e || !e.changedTouches) return;
+    if (e.changedTouches.length > 1) return; // ignore multi-touch
+    const t = e.changedTouches[0];
+    touchState.active = true;
+    touchState.id = t.identifier;
+    touchState.startX = t.clientX;
+    touchState.startY = t.clientY;
+    touchState.dragging = false;
+    touchState.from = from;
+    touchState.pieceIndex = pieceIndex;
+    touchState.cellIndex = (typeof cellIndex !== 'undefined') ? cellIndex : null;
+    touchState.sourceEl = sourceEl;
+    createTouchGhost((from === 'thumbs') ? pieces[pieceIndex] : (pieces[pieceIndex] || null), t.clientX, t.clientY);
+
+    document.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    document.addEventListener('touchend', touchEndHandler);
+    document.addEventListener('touchcancel', touchEndHandler);
+  }
+
+  function touchMoveHandler(e) {
+    if (!touchState.active) return;
+    let t = null;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === touchState.id) { t = e.changedTouches[i]; break; }
+    }
+    if (!t) return;
+    const dx = t.clientX - touchState.startX;
+    const dy = t.clientY - touchState.startY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (!touchState.dragging && dist > 8) {
+      touchState.dragging = true;
+      if (touchState.sourceEl) touchState.sourceEl.classList.add('touch-dragging');
+      clearDropTargets();
+    }
+    if (touchState.dragging) {
+      e.preventDefault(); // prevent scroll while dragging
+      moveTouchGhost(t.clientX, t.clientY);
+      clearDropTargets();
+      const cell = findCellFromPoint(t.clientX, t.clientY);
+      if (cell) cell.classList.add('drop-target');
+      if (isOverThumbsArea(t.clientX, t.clientY)) {
+        if (thumbs) thumbs.classList.add('drop-target');
+        if (thumbsContainer) thumbsContainer.classList.add('drop-target');
+      }
+    }
+  }
+
+  function touchEndHandler(e) {
+    if (!touchState.active) return;
+    let t = null;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === touchState.id) { t = e.changedTouches[i]; break; }
+    }
+    if (!t) return;
+
+    if (!touchState.dragging) {
+      if (touchState.sourceEl && typeof touchState.sourceEl.click === 'function') {
+        touchState.sourceEl.click();
+      }
+    } else {
+      const x = t.clientX; const y = t.clientY;
+      const targetCell = findCellFromPoint(x, y);
+      if (targetCell) {
+        performDropLogic({ from: touchState.from, pieceIndex: touchState.pieceIndex, sourceCellIndex: touchState.cellIndex, targetCellEl: targetCell });
+      } else if (isOverThumbsArea(x, y)) {
+        if (touchState.from === 'grid') {
+          let placements = getPlacements();
+          const idx = touchState.cellIndex;
+          if (!isNaN(idx) && placements[idx]) {
+            placements[idx] = null;
+            setPlacements(placements);
+            setTimeout(() => {
+              renderPieceThumbs();
+              const nAfter = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : 0;
+              createGrid(nAfter);
+            }, 0);
+          }
+        }
+      }
+    }
+
+    clearDropTargets();
+    if (touchState.sourceEl) touchState.sourceEl.classList.remove('touch-dragging');
+    removeTouchGhost();
+    touchState.active = false;
+    touchState.id = null;
+    touchState.dragging = false;
+    touchState.from = null;
+    touchState.pieceIndex = null;
+    touchState.cellIndex = null;
+    touchState.sourceEl = null;
+
+    document.removeEventListener('touchmove', touchMoveHandler, { passive: false });
+    document.removeEventListener('touchend', touchEndHandler);
+    document.removeEventListener('touchcancel', touchEndHandler);
   }
 
   // create grid based on size (rows/cols similar to slice algorithm)
@@ -228,6 +377,12 @@ document.addEventListener('DOMContentLoaded', function () {
             cell.classList.add('dragging');
           });
           img.addEventListener('dragend', function (e) { console.debug('img dragend idx=', idx, 'effect=', e.dataTransfer && e.dataTransfer.dropEffect); cell.classList.remove('dragging'); currentDrag = null; });
+
+          // touchstart fallback for touch devices
+          img.addEventListener('touchstart', function (ev) {
+            const pIdx = pieces.indexOf(placed);
+            handleTouchStartGeneric(ev, 'grid', pIdx, idx, cell);
+          }, { passive: true });
         }
 
         // debug: when dragging over thumbs container/log
@@ -269,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function () {
           createGrid(n);
         });
 
-        // Dragstart für Grid-Zellen (nur wenn belegt) - leave as a fallback for dragging the cell container
+        // Dragstart für Grid-Zellen (nur wenn belegt) - leave as a fallback für dragging the cell container
         cell.addEventListener('dragstart', (e) => {
           const placements = getPlacements();
           if (placements[idx]) {
@@ -340,6 +495,11 @@ document.addEventListener('DOMContentLoaded', function () {
         e.dataTransfer.setData('from', 'thumbs');
       });
       el.addEventListener('dragend', () => { currentDrag = null; });
+
+      // touchstart for thumbs
+      el.addEventListener('touchstart', function (ev) {
+        handleTouchStartGeneric(ev, 'thumbs', idx, null, el);
+      }, { passive: true });
 
       thumbs.appendChild(el);
     });
