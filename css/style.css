@@ -447,3 +447,34 @@ main.container {
   color: #ffffff;
   transform: translateY(-1px);
 }
+
+/* Responsive Anpassungen für kleinere Bildschirme */
+@media (max-width: 992px) {
+  html, body {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+  }
+
+  main.container, main.d-flex {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .accent-rect {
+    height: 180px;
+    margin-top: 3rem;
+  }
+
+  .puzzle-placeholder {
+    width: min(720px, 96vw);
+    height: clamp(260px, 82vw, 560px);
+    max-height: none;
+    overflow: visible;
+  }
+
+  .thumbs-container {
+    max-height: none;
+  }
+}
