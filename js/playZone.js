@@ -128,10 +128,24 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const restartBtn = document.getElementById('restart-btn');
-  if (restartBtn) restartBtn.addEventListener('click', () => location.reload());
+  if (restartBtn) restartBtn.addEventListener('click', () => {
+    // Leere alle Placements so, dass alle Teile zurück in die Thumbnail-Liste gelangen.
+    const n = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : FALLBACK_PIECE_COUNT;
+    const empty = Array(n).fill(null);
+    setPlacements(empty);
+    // UI aktualisieren
+    renderPieceThumbs();
+    createGrid(n);
+    // Hinweis: wir schließen das Modal nicht automatisch, damit der Nutzer ggf. weitermachen kann.
+  });
 
   const nextPuzzleBtn = document.getElementById('next-puzzle-btn');
-  if (nextPuzzleBtn) nextPuzzleBtn.addEventListener('click', () => { alert('Nächstes Puzzle (Platzhalter)'); });
+  if (nextPuzzleBtn) {
+    nextPuzzleBtn.addEventListener('click', () => {
+      // Weiterleitung zur Konfigurationsseite für ein neues Puzzle
+      window.location.href = 'configGame.html';
+    });
+  }
 
   // --- Puzzelteile Logik ---
   const PIECES_KEY = 'puzzlePieces';

@@ -16,8 +16,8 @@ html, body {
   background-color: #f8f9fa !important;
 }
 .navbar {
-  box-shadow: none; /* entfernt Schatten */
-  border-bottom: none; /* stellt sicher, dass keine Linie vorhanden ist */
+  box-shadow: none;
+  border-bottom: none;
 }
 .navbar .navbar-brand {
   font-weight: 600;
@@ -28,8 +28,8 @@ html, body {
 }
 
 main.container, main.d-flex {
-  height: calc(100vh - 72px); /* lässt Platz für die Navbar (~72px) */
-  overflow: hidden;
+  height: calc(100vh - 72px);
+  overflow: visible;
 }
 
 main.container {
@@ -41,12 +41,12 @@ main.container {
   background-color: #2a614d;
   color: #ffffff;
   border: none;
-  border-radius: 999px; /* stark abgerundet */
+  border-radius: 999px;
   transition: background-color 150ms ease, transform 120ms ease;
 }
 .nav-btn:hover,
 .nav-btn:focus {
-  background-color: #234f3f; /* etwas dunkler bei Hover */
+  background-color: #234f3f;
   color: #fff;
   text-decoration: none;
   transform: translateY(-1px);
@@ -55,11 +55,33 @@ main.container {
   transform: translateY(0);
 }
 
-/* Titel- und CTA-Styling */
+/* Einstellungen-Knopf in playZone: gleiche Optik wie .nav-btn, nur orange */
+.settings-btn {
+  background-color: #e5943f;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  transition: background-color 150ms ease, transform 120ms ease;
+}
+.settings-btn:hover,
+.settings-btn:focus {
+  background-color: #d27f2d; /* etwas dunkleres Orange beim Hover */
+  color: #ffffff;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+.settings-btn:active {
+  transform: translateY(0);
+}
+
 .text-center h1 {
   font-size: 2.25rem;
   font-weight: 700;
   font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+.text-center {
+  /* Platz unter Überschrift/CTA schaffen, damit das überstehende Bild/Rechteck nicht hineinragt */
+  margin-bottom: 6vh; /* leicht reduziert: genug Puffer unter dem CTA, aber Platz für das überstehende Bild */
 }
 .text-center .cta-btn {
   background-color: #f0a44d;
@@ -71,7 +93,8 @@ main.container {
   display: inline-block; /* sicherstellen, dass Button sichtbar ist */
   visibility: visible;
   opacity: 1;
-  z-index: 2;
+  position: relative; /* notwendig, damit z-index wirkt */
+  z-index: 50; /* sicherstellen, dass der Start-Button immer oben bleibt */
   box-shadow: 0 .12rem .35rem rgba(0,0,0,.08); /* leichter Schatten */
 }
 .text-center .cta-btn:hover,
@@ -81,24 +104,60 @@ main.container {
   text-decoration: none;
 }
 
-/* Accent-Rect: bündig mit .container, stark abgerundet */
-.accent-rect {
+/* Accent-Wrapper: umgibt sowohl das Bild als auch das grüne Rechteck */
+.accent {
+  position: relative;
   width: 100%;
-  height: 300px; /* Basis-Höhe, kann auf kleineren Bildschirmen verringert werden */
+  display: block;
+  height: auto;
+  min-height: 320px;
+}
+
+/* Accent-Rect: jetzt absolut innerhalb des Wrappers, zentriert zur Bildmitte */
+.accent-rect {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 4.5rem);
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 900px;
+  height: 300px;
   background-color: #7ca38e;
-  border-radius: 24px; /* stark abgerundet */
-  margin-left: 0; /* bündig mit .container */
-  margin-right: 0;
-  margin-top: 6rem; /* Abstand verdoppelt (vorher 3rem) */
+  border-radius: 24px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Bild, welches in der Mitte des grünen Rechtecks sitzt */
+.accent-home {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 4.5rem);
+  transform: translate(-50%, -50%);
+  height: 150%;
+  width: auto;
+  object-fit: contain; /* skaliert ohne Verzerren */
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@media (max-width: 992px) {
+  .accent-home { top: calc(50% + 3rem); height: 130%; }
+  .text-center { margin-bottom: 6vh; }
+  .accent-rect { top: calc(50% + 3rem); height: 180px; }
 }
 
 @media (max-width: 576px) {
-  .accent-rect { height: 42px; border-radius: 18px; margin-top: 4rem; }
+  .accent-rect { top: calc(50% + 3rem); height: 42px; border-radius: 18px; }
+  .accent-home { top: calc(50% + 3rem); height: 160%; }
+  .text-center { margin-bottom: 10vh; }
 }
 
 /* Kleinere Bildschirm-Anpassung */
 @media (max-width: 576px) {
   .nav-btn { padding: 0.35rem 0.75rem; }
+  .settings-btn { padding: 0.35rem 0.75rem; }
 }
 
 /* Styles für configGame.html */
@@ -110,112 +169,68 @@ main.container {
   border-radius: 14px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
   margin: 16px;
+
+  /* Einheitliche vertikale Abstände: Flex-Column mit Gap */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
+/* Entferne doppelte Bootstrap-Abstände innerhalb des Config-Containers
+   damit nur das oben definierte gap wirkt. Wir zielen nur auf direkte Kinder. */
+.config-container > .mb-3,
+.config-container > .mt-2,
+.config-container > .text-center {
+  margin: 0 !important;
+}
+
+
 .config-container .panel {
+  margin: 0;
   background: #e4f5ec;
   padding: 12px;
   border-radius: 10px;
 }
 
-.config-container .panel-title {
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-/* Schwierigkeits-/Größenbuttons (Schwierigkeit aktuell nicht eingebunden) */
-.difficulty-btn, .size-btn {
+/* Bild-Vorschau: kleine Anpassung damit sie sich ins Grid einfügt */
+.config-container #image-preview {
+  max-width: 100%;
+  max-height: 200px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 8px;
-  min-width: 64px;
 }
 
-/* Selected state für Buttons */
-.difficulty-btn.selected, .size-btn.selected {
-  background-color: #2a614d;
-  color: #fff;
-  border-color: #234f3f;
-}
+/* Button-Wrapper: keine zusätzliche top-margin mehr */
+.config-container .text-center { margin: 0 !important; }
 
-/* Selected (ausgewählt) Zustand für Config-Outline-Buttons */
-.config-container .btn.btn-outline-secondary.selected {
-  background-color: #234f3f !important; /* gewünscht: #234f3f */
-  color: #ffffff !important; /* Text soll weiß bleiben für Kontrast */
-  border-color: #234f3f !important;
-}
 
-/* visual cue wenn Start ohne Auswahl geklickt wird */
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  50% { transform: translateX(6px); }
-  75% { transform: translateX(-4px); }
-  100% { transform: translateX(0); }
-}
-
-.btn.invalid {
-  animation: shake 0.36s ease;
-}
-
-/* Mobile Anpassungen */
-@media (max-width: 480px) {
-  .config-container { padding: 14px; margin: 12px; }
-  .difficulty-btn, .size-btn { min-width: 48px; padding: 6px 8px; }
-}
-
-/* Styles für das Panel in configGame.html */
-.panel-body {
-  display: flex; /* sicherstellen, dass .panel-body ein Flex-Container ist */
-  gap: 0.5rem; /* konsistenter Abstand zwischen Buttons */
-  align-items: center;
-}
-
-.panel-body > .btn {
-  flex: 1 1 0; /* gleiche Breite, dehnbar/zusammenziehbar */
-  min-width: 0; /* verhindert Overflow bei langen Texten */
-  text-align: center;
-}
-
-/* Für sehr kleine Bildschirme erlauben wir, dass die Größen-Buttons umbrechen */
 @media (max-width: 420px) {
-  .panel-body { flex-wrap: wrap; }
-  .panel-body > .btn { flex: 1 1 40%; }
+  .config-container { gap: 0.6rem; padding: 14px; }
 }
 
-/* Hover-Farbe für die weißen Buttons auf der Config-Seite */
-.difficulty-btn.btn-outline-secondary:hover,
-.size-btn.btn-outline-secondary:hover,
-.difficulty-btn.btn-outline-secondary:focus,
-.size-btn.btn-outline-secondary:focus,
-.difficulty-btn.btn-outline-secondary:active,
-.size-btn.btn-outline-secondary:active {
-  background-color: #7ca38e !important;
+/* Selected state für Buttons in der Config-Seite */
+.config-container .btn.difficulty-btn.selected,
+.config-container .btn.size-btn.selected,
+.config-container .btn.btn-outline-secondary.selected {
+  background-color: #234f3f !important; /* dunkleres Grün als Override */
   color: #ffffff !important;
-  border-color: #7ca38e !important;
+  border-color: #173b30 !important; /* dunklere Border für Kontrast */
+  box-shadow: 0 10px 30px rgba(36,79,63,0.18), inset 0 -3px 0 rgba(0,0,0,0.06) !important;
+  transform: translateY(-1px);
+  transition: transform 120ms ease, box-shadow 160ms ease;
 }
 
-.difficulty-btn.btn-outline-secondary,
-.size-btn.btn-outline-secondary {
-  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
-}
-
-/* Umrandete Buttons in der Config gut lesbar machen: hellgrauer Hintergrund + dunkler Text */
-.config-container .btn.btn-outline-secondary {
-  background-color: #ffffff; /* ersetzt #fffaeb */
-  color: #212529; /* dunkler Text für Kontrast */
-  border-color: #d6d6d6;
-}
-.config-container .btn.btn-outline-secondary:focus {
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}
-
-/* Outline-Secondary-Buttons allgemein lesbar halten (nicht nur beim Hover) */
-.btn-outline-secondary {
-  background-color: transparent;
-  color: #212529; /* dunkler Text für Lesbarkeit */
-  border-color: #d6d6d6;
-}
-.btn-outline-secondary:focus {
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+/* Fallback: auch über aria-pressed unterstützen (Accessibility) */
+.config-container .btn.size-btn[aria-pressed="true"],
+.config-container .btn.difficulty-btn[aria-pressed="true"],
+.config-container .btn[aria-pressed="true"] {
+  background-color: #234f3f !important;
+  color: #ffffff !important;
+  border-color: #173b30 !important;
+  box-shadow: 0 10px 30px rgba(36,79,63,0.18), inset 0 -3px 0 rgba(0,0,0,0.06) !important;
+  transform: translateY(-1px);
 }
 
 /* Styles für playZone */
@@ -354,87 +369,12 @@ main.container {
   transition: opacity 120ms ease;
 }
 
-/* Einstellungen-Button: gleiche Form wie .nav-btn, eigenes Farbschema */
-.settings-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.45rem 0.9rem; /* gleiche Abmessungen wie .nav-btn */
-  font-size: 1rem;
-  line-height: 1;
-  min-height: 40px; /* gleiche Mindesthöhe wie .nav-btn */
-  min-width: 84px; /* gleiche Mindestbreite */
-
-  background-color: #f0a44d;
-  color: #ffffff;
-  border: none;
-  border-radius: 999px; /* Pillen-Form wie .nav-btn */
-  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
-}
-.settings-btn:hover,
-.settings-btn:focus {
-  background-color: #e5943f;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.14);
-}
-
-/* Kachel-Styling für eine Puzzle-Auswahlseite (derzeit nicht eingebunden) */
-.puzzle-card {
-  width: 100%;
-  padding-top: 66.66%; /* 3:2 Verhältnis, Höhe über padding trick */
-  background: #e9e9e9;
-  border-radius: 12px;
-  border: 4px solid #f5f5f5;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  position: relative;
-  cursor: pointer;
-  transition: transform 140ms ease, box-shadow 140ms ease;
-}
-.puzzle-card:focus { outline: none; box-shadow: 0 10px 24px rgba(0,0,0,0.12); transform: translateY(-4px); }
-.puzzle-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.14); }
-.puzzle-card::after { content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; border-radius: 8px; }
-
-/* Standard-Buttontext lesbar halten (nicht nur beim Hover) */
-.btn { color: #212529; }
-
-/* Navbar-Buttons (Home / Auswählen) haben immer weißen Text */
-.nav-btn,
-.nav-btn * {
-  color: #ffffff !important;
-}
-
-/* Farben für Buttons im Einstellungen-Modal */
-#settingsModal #save-settings,
-#settingsModal #restart-btn {
-  background-color: #7ca38e;
-  color: #ffffff;
-  border-color: #7ca38e;
-}
-#settingsModal #save-settings:hover,
-#settingsModal #restart-btn:hover {
-  background-color: #6f927a; /* leicht dunkler beim Hover */
-  border-color: #6f927a;
-  color: #ffffff;
-}
-
-#settingsModal #next-puzzle-btn {
-  background-color: #e5943f;
-  color: #ffffff;
-  border-color: #e5943f;
-}
-#settingsModal #next-puzzle-btn:hover {
-  background-color: #d27f2d; /* leicht dunkler beim Hover */
-  border-color: #d27f2d;
-  color: #ffffff;
-}
-
 /* Victory modal next button custom color */
 #victory-next-btn {
-  background-color: #d27f2d; /* requested color */
-  border-color: #d27f2d;
-  color: #ffffff;
-  border-radius: 999px; /* very rounded */
+  background-color: #e5943f !important;
+  border-color: #e5943f !important;
+  color: #ffffff !important;
+  border-radius: 999px;
   padding: 0.45rem 1rem;
   font-weight: 600;
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
@@ -442,39 +382,59 @@ main.container {
 }
 #victory-next-btn:hover,
 #victory-next-btn:focus {
-  background-color: #bf6f24; /* slightly darker */
-  border-color: #bf6f24;
-  color: #ffffff;
+  background-color: #d27f2d !important; /* leicht dunkler bei Hover */
+  border-color: #d27f2d !important;
+  color: #ffffff !important;
   transform: translateY(-1px);
 }
 
-/* Responsive Anpassungen für kleinere Bildschirme */
-@media (max-width: 992px) {
-  html, body {
-    height: auto;
-    min-height: 100%;
-    overflow-y: auto;
-  }
-
-  main.container, main.d-flex {
-    height: auto;
-    min-height: 100vh;
-    overflow: visible;
-  }
-
-  .accent-rect {
-    height: 180px;
-    margin-top: 3rem;
-  }
-
-  .puzzle-placeholder {
-    width: min(720px, 96vw);
-    height: clamp(260px, 82vw, 560px);
-    max-height: none;
-    overflow: visible;
-  }
-
-  .thumbs-container {
-    max-height: none;
-  }
+/* restart knopf und next-puzzle knopf: orange, abgerundet, hover-effekt */
+#restart-btn,
+#next-puzzle-btn {
+  background-color: #e5943f !important;
+  border-color: #e5943f !important;
+  color: #ffffff !important;
+  border-radius: 999px !important;
+  padding: 0.45rem 0.9rem !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08) !important;
+  transition: background-color 120ms ease, transform 120ms ease;
 }
+#restart-btn:hover,
+#next-puzzle-btn:hover,
+#restart-btn:focus,
+#next-puzzle-btn:focus {
+  background-color: #d27f2d !important;
+  border-color: #d27f2d !important;
+  transform: translateY(-1px);
+}
+
+
+#restart-btn.btn-outline-danger,
+#next-puzzle-btn.btn-outline-primary {
+  background-color: #e5943f !important;
+  border-color: #e5943f !important;
+  color: #ffffff !important;
+}
+
+
+#save-settings {
+  border-radius: 999px !important;
+  padding: 0.45rem 0.9rem !important;
+  transition: background-color 120ms ease, transform 120ms ease;
+}
+#save-settings:active,
+#save-settings:focus {
+  background-color: #173b30 !important;
+  border-color: #173b30 !important;
+  color: #ffffff !important;
+  transform: translateY(0);
+}
+
+
+#settingsModal .count-btn.selected,
+#settingsModal .count-btn[aria-pressed="true"] {
+  background-color: #173b30 !important;
+  border-color: #173b30 !important;
+  color: #ffffff !important;
+}
+
