@@ -132,11 +132,18 @@ document.addEventListener('DOMContentLoaded', function () {
   let pieces = [];
   try {
     const json = localStorage.getItem(PIECES_KEY);
+    console.debug('playZone: raw puzzlePieces json length=', json ? json.length : 0);
     const parsed = json ? JSON.parse(json) : [];
+    if (!Array.isArray(parsed)) console.debug('playZone: parsed puzzlePieces is not array, type=', typeof parsed);
     pieces = Array.isArray(parsed) ? parsed : [];
-  } catch (err) { pieces = []; }
+  } catch (err) { pieces = []; console.error('playZone: error parsing puzzlePieces from localStorage', err); }
 
   console.debug('playZone: loaded puzzlePieces from localStorage, count=', pieces.length);
+
+  if ((!pieces || pieces.length === 0) && size && Number(size) > 0) {
+    // show user hint in UI that no pieces were found (helpful debugging for user)
+    if (info) info.textContent = info.textContent + ' · Hinweis: Keine Puzzleteile in localStorage gefunden. Bitte erstelle Teile in der Konfiguration.';
+  }
 
   const expectedPieces = size > 0 ? size : pieces.length;
   if (expectedPieces && pieces.length > expectedPieces) {
@@ -145,6 +152,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Fallback-Objekt für Drag-Informationen (sicherer als allein dataTransfer)
   let currentDrag = null;
+
+  // --- Placements storage helpers (restore) ---
+  function getPlacements() {
+    let placements;
+    try { placements = JSON.parse(localStorage.getItem(PLACEMENTS_KEY) || '[]'); } catch (e) { placements = []; }
+    return Array.isArray(placements) ? placements : [];
+  }
+
+  function setPlacements(arr) {
+    localStorage.setItem(PLACEMENTS_KEY, JSON.stringify(arr));
+    try { checkSolved(); } catch (e) { console.error('checkSolved failed', e); }
+  }
+
+  function checkSolved() {
+    if (!pieces || !pieces.length) return false;
+    const placements = getPlacements();
+    if (!Array.isArray(placements) || placements.length !== pieces.length) return false;
+    for (let i = 0; i < pieces.length; i++) {
+      if (!placements[i]) return false;
+      if (placements[i] !== pieces[i]) return false;
+    }
+    // all match
+    if (victoryModal && !victoryShown) {
+      victoryShown = true;
+      try { victoryModal.show(); } catch (e) { alert('Herzlichen Glückwunsch! Puzzle gelöst.'); }
+    }
+    return true;
+  }
 
   // --- Touch drag state and helpers ---
   const touchState = {
@@ -326,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // create grid based on size (rows/cols similar to slice algorithm)
   function createGrid(n) {
+    console.debug('createGrid called with n=', n, 'pieces.length=', pieces.length);
     if (!puzzleGrid) return;
     puzzleGrid.innerHTML = '';
     if (!n || n <= 0) {
@@ -338,6 +374,7 @@ document.addEventListener('DOMContentLoaded', function () {
     puzzleGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
     let placements = getPlacements();
+    console.debug('createGrid: placements length=', placements.length, 'placements sample=', placements.slice(0,5));
     if (!Array.isArray(placements) || placements.length !== n) {
       placements = Array(n).fill(null);
       setPlacements(placements);
@@ -474,6 +511,7 @@ document.addEventListener('DOMContentLoaded', function () {
     thumbs.innerHTML = '';
     // Zeige nur nicht platzierte Teile
     const placements = getPlacements();
+    console.debug('renderPieceThumbs: pieces.length=', pieces.length, 'placements.length=', placements.length);
     pieces.forEach((dataUrl, idx) => {
       if (placements.includes(dataUrl)) return; // bereits platziert
       const el = document.createElement('div');
