@@ -28,7 +28,7 @@ html, body {
 }
 
 main.container, main.d-flex {
-  height: calc(100vh - 72px);
+  height: auto;
   overflow: visible;
 }
 
@@ -235,8 +235,8 @@ main.container {
 
 .puzzle-placeholder {
   width: min(720px, 86vw);
-  height: min(520px, calc(100vh - 240px));
-  max-height: calc(100vh - 240px);
+  height: auto;
+  max-height: none;
   overflow: hidden; /* schneidet Inhalt an der Border ab */
   border-radius: var(--frame-radius); /* gleiche Rundung wie der Frame */
   padding: 0; /* Grid soll direkt an die Border stoßen */
