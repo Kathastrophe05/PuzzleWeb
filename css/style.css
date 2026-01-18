@@ -1,6 +1,6 @@
 /* Grundlegende Seite */
 body {
-  background-color: #f8f9fa; /* leichtes Grau, hilft Kontrast zur weißen Navbar */
+  background-color: #f8f9fa;
   color: #212529;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   margin: 0;
@@ -88,19 +88,19 @@ main.container {
   color: #ffffff; /* Textfarbe angepasst */
   border: none;
   padding: 0.6rem 1.2rem;
-  border-radius: 999px; /* gleiche abgerundeten Ecken wie .nav-btn */
-  margin-top: 1rem; /* Erhöht für bessere Sichtbarkeit */
-  display: inline-block; /* sicherstellen, dass Button sichtbar ist */
+  border-radius: 999px;
+  margin-top: 1rem;
+  display: inline-block;
   visibility: visible;
   opacity: 1;
-  position: relative; /* notwendig, damit z-index wirkt */
-  z-index: 50; /* sicherstellen, dass der Start-Button immer oben bleibt */
-  box-shadow: 0 .12rem .35rem rgba(0,0,0,.08); /* leichter Schatten */
+  position: relative;
+  z-index: 50;
+  box-shadow: 0 .12rem .35rem rgba(0,0,0,.08);
 }
 .text-center .cta-btn:hover,
 .text-center .cta-btn:focus {
   background-color: #e5943f;
-  color: #ffffff; /* Text bleibt angepasst beim Hover */
+  color: #ffffff;
   text-decoration: none;
 }
 
@@ -191,9 +191,9 @@ main.container {
 .config-container .btn.difficulty-btn.selected,
 .config-container .btn.size-btn.selected,
 .config-container .btn.btn-outline-secondary.selected {
-  background-color: #2a614d !important; /* angepasst: gewünschtes Grün */
+  background-color: #2a614d !important;
   color: #ffffff !important;
-  border-color: #173b30 !important; /* dunklere Border für Kontrast */
+  border-color: #173b30 !important;
   box-shadow: 0 10px 30px rgba(36,79,63,0.18), inset 0 -3px 0 rgba(0,0,0,0.06) !important;
   transform: translateY(-1px);
   transition: transform 120ms ease, box-shadow 160ms ease;
@@ -214,16 +214,16 @@ main.container {
 :root {
   --frame-radius: 20px;
   --frame-ring: 12px;
-  --frame-gap: 14px; /* innere Lücke zwischen Rahmen und Grid */
-  --placeholder-bg: #fbfaf8; /* sehr helles Neutral für den Hintergrund */
+  --frame-gap: 14px;
+  --placeholder-bg: #fbfaf8;
   --cell-gap: 6px; /* Abstand zwischen Puzzleteilen */
 }
 
 .frame {
   background: transparent; /* kein sichtbarer Hintergrund, Rahmen sitzt am Platzhalter */
   border-radius: var(--frame-radius);
-  border: none; /* Rahmen jetzt am Platzhalter statt am Frame */
-  padding: 0; /* kein Abstand zwischen Frame und Platzhalter */
+  border: none;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,11 +237,11 @@ main.container {
   width: min(720px, 86vw);
   height: auto;
   max-height: none;
-  overflow: hidden; /* schneidet Inhalt an der Border ab */
-  border-radius: var(--frame-radius); /* gleiche Rundung wie der Frame */
-  padding: 0; /* Grid soll direkt an die Border stoßen */
+  overflow: hidden;
+  border-radius: var(--frame-radius);
+  padding: 0;
   box-sizing: border-box;
-  background: transparent; /* kein inneres Weiß */
+  background: transparent;
 
   /* sichtbarer Rahmen sitzt direkt am Platzhalter und umschließt das Grid */
   border: var(--frame-ring) solid #8b5a2b;
@@ -254,24 +254,24 @@ main.container {
   width: 100%;
   height: 100%;
   display: grid;
-  gap: 0; /* kein Abstand, damit Zellen direkt die Border berühren */
+  gap: 0;
   align-items: stretch;
   justify-items: stretch;
   background: transparent;
-  padding: 0; /* kein zusätzlicher Abstand zum Rand */
+  padding: 0;
   box-sizing: border-box;
-  grid-auto-rows: 1fr; /* Zeilen proportional zu den Spalten halten */
+  grid-auto-rows: 1fr;
 }
 .puzzle-cell {
   background: #eaeaea;
-  border-radius: 0; /* innere Abrundungen entfernt, um bündig anzuschließen */
+  border-radius: 0;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  border: 0; /* kein innerer Rahmen für Symmetrie */
-  aspect-ratio: 1 / 1; /* Zellen bleiben quadratisch, damit das Grid sauber füllt */
+  border: 0;
+  aspect-ratio: 1 / 1;
 }
 .puzzle-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .puzzle-cell.placeholder { background: #e0e0e0; }
@@ -359,7 +359,7 @@ main.container {
 }
 #victory-next-btn:hover,
 #victory-next-btn:focus {
-  background-color: #d27f2d !important; /* leicht dunkler bei Hover */
+  background-color: #d27f2d !important;
   border-color: #d27f2d !important;
   color: #ffffff !important;
   transform: translateY(-1px);
