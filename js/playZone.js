@@ -1,5 +1,4 @@
-// playZone JS: einfache Thumbnail-Scroll-Logik und Anzeige der übergebenen Optionen
-
+// playZone JS: einfache Thumbnail-Scroll-Logik
 document.addEventListener('DOMContentLoaded', function () {
   const thumbs = document.getElementById('thumbs');
   const left = document.getElementById('thumbs-left');
@@ -20,7 +19,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // Default: sichtbare Thumbs
   let visibleCount = parseInt(localStorage.getItem('visibleThumbCount') || '8', 10);
 
-  // Hilfsfunktionen
+  /**
+   * Setzt die gewünschte Anzahl gleichzeitig sichtbarer Thumbnails und aktualisiert die CSS-Variable.
+   * @param {number} n - Anzahl der angezeigten Thumbs
+   */
   function applyVisibleCount(n) {
     visibleCount = Number(n) || 8;
     const container = document.querySelector('.thumbs-container');
@@ -28,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
     adjustThumbSizes();
   }
 
+  /**
+   * Berechnet die Thumbnail-Abmessungen anhand der Containerbreite und passt jedes Thumbnail an.
+   */
   function adjustThumbSizes() {
     const container = document.querySelector('.thumbs-container');
     if (!container) return;
@@ -44,6 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
   applyVisibleCount(visibleCount);
   window.addEventListener('resize', () => adjustThumbSizes());
 
+  /**
+   * Scrollt die Thumbnail-Leiste um einen festen Schritt nach links/rechts.
+   * @param {number} delta - 1 für rechts, -1 für links
+   */
   function scrollThumbs(delta) {
     if (!thumbs) return;
     const container = thumbs.parentElement; // .thumbs-container
@@ -68,16 +77,15 @@ document.addEventListener('DOMContentLoaded', function () {
     settingsBtn.addEventListener('click', () => settingsModal.show());
   }
 
-  // Victory modal setup (shown when puzzle solved)
+  // Sieg Logik
   const victoryModalEl = document.getElementById('victoryModal');
   let victoryModal = null;
   let victoryShown = false;
   if (victoryModalEl && typeof bootstrap !== 'undefined') {
-    // prevent closing by ESC or backdrop click
+    // verhindere Schließen durch Klick außerhalb oder Escape
     victoryModal = new bootstrap.Modal(victoryModalEl, { keyboard: false, backdrop: 'static' });
   }
 
-  // Next button inside victory modal -> go to configGame
   const victoryNextBtn = document.getElementById('victory-next-btn');
   if (victoryNextBtn) {
     victoryNextBtn.addEventListener('click', () => {
@@ -125,10 +133,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const nextPuzzleBtn = document.getElementById('next-puzzle-btn');
   if (nextPuzzleBtn) nextPuzzleBtn.addEventListener('click', () => { alert('Nächstes Puzzle (Platzhalter)'); });
 
-  // --- Puzzle pieces logic ---
+  // --- Puzzelteile Logik ---
   const PIECES_KEY = 'puzzlePieces';
   const PLACEMENTS_KEY = 'puzzlePlacements';
 
+  // Lade gespeicherte Teile aus localStorage
   let pieces = [];
   try {
     const json = localStorage.getItem(PIECES_KEY);
@@ -144,7 +153,11 @@ document.addEventListener('DOMContentLoaded', function () {
   let targetPiecesCount = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : FALLBACK_PIECE_COUNT;
   if (targetPiecesCount < 1) targetPiecesCount = FALLBACK_PIECE_COUNT;
 
-  // If no pieces were found, create simple placeholder pieces so the UI shows a puzzle
+  /**
+   * Erzeugt SVG-Platzhalter für fehlende Puzzleteile (Debug/Offline-Fallback).
+   * @param {number} n - Anzahl gewünschter Platzhalter
+   * @returns {string[]} Data-URLs der generierten Platzhalter
+   */
   function createPlaceholderPieces(n) {
     const out = [];
     for (let i = 0; i < n; i++) {
@@ -160,35 +173,47 @@ document.addEventListener('DOMContentLoaded', function () {
     return out;
   }
 
-  // If no pieces exist but we have a requested size (or fallback), generate placeholders and persist them
+  // wenn keine Teile vorhanden sind und Größe definiert ist, generiere Platzhalter-Teile
   if ((!pieces || pieces.length === 0)) {
     console.debug('No pieces found; generating', targetPiecesCount, 'placeholder pieces');
     pieces = createPlaceholderPieces(targetPiecesCount);
     try {
       localStorage.setItem(PIECES_KEY, JSON.stringify(pieces));
-      // clear any old placements so grid will initialize clean
+      // lösche alte Placements
       localStorage.removeItem(PLACEMENTS_KEY);
     } catch (e) { console.error('Failed to save placeholder pieces to localStorage', e); }
   } else if (pieces.length < targetPiecesCount) {
-    // trim targetPiecesCount down to available pieces if fewer
+    // Wenn weniger Teile als Zielanzahl vorhanden sind, passe die Zielanzahl an
     targetPiecesCount = pieces.length;
   }
 
-  // Fallback-Objekt für Drag-Informationen (sicherer als allein dataTransfer)
+  // Fallback-Objekt für Drag-Informationen
   let currentDrag = null;
 
-  // --- Placements storage helpers (restore) ---
+  //  Placements storage Hilfsfunktionen
+  /**
+   * Liest den aktuellen Placement-Zustand aus localStorage.
+   * @returns {(string|null)[]} Array mit Data-URLs pro Zelle oder leerem Array
+   */
   function getPlacements() {
     let placements;
     try { placements = JSON.parse(localStorage.getItem(PLACEMENTS_KEY) || '[]'); } catch (e) { placements = []; }
     return Array.isArray(placements) ? placements : [];
   }
 
+  /**
+   * Persistiert die übergebenen Placements und triggert eine Siegprüfung.
+   * @param {(string|null)[]} arr - Placement-Array in Grid-Reihenfolge
+   */
   function setPlacements(arr) {
     localStorage.setItem(PLACEMENTS_KEY, JSON.stringify(arr));
     try { checkSolved(); } catch (e) { console.error('checkSolved failed', e); }
   }
 
+  /**
+   * Prüft, ob alle Zellen korrekt belegt sind und öffnet ggf. den Gewinn-Dialog.
+   * @returns {boolean} true, wenn gelöst
+   */
   function checkSolved() {
     if (!pieces || !pieces.length) return false;
     const placements = getPlacements();
@@ -205,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return true;
   }
 
-  // --- Touch drag state and helpers ---
+  // Touch Drag-and-Drop Hilfsfunktionen
   const touchState = {
     active: false,
     id: null,
@@ -219,6 +244,13 @@ document.addEventListener('DOMContentLoaded', function () {
     ghost: null
   };
 
+  // Erstelle ein Ghost-Element für das Touch-Dragging
+  /**
+   * Erzeugt ein halbtransparentes Ghost-Image für Touch-Dragging.
+   * @param {string} src - Bildquelle/Data-URL
+   * @param {number} x - Start-X auf dem Screen
+   * @param {number} y - Start-Y auf dem Screen
+   */
   function createTouchGhost(src, x, y) {
     removeTouchGhost();
     if (!src) return;
@@ -235,12 +267,18 @@ document.addEventListener('DOMContentLoaded', function () {
     touchState.ghost = img;
   }
 
+  /**
+   * Aktualisiert die Position des Ghost-Elements während des Dragging.
+   */
   function moveTouchGhost(x, y) {
     if (!touchState.ghost) return;
     touchState.ghost.style.left = (x - touchState.ghost.width / 2) + 'px';
     touchState.ghost.style.top = (y - touchState.ghost.height / 2) + 'px';
   }
 
+  /**
+   * Entfernt das Ghost-Element aus dem DOM.
+   */
   function removeTouchGhost() {
     if (touchState.ghost && touchState.ghost.parentNode) {
       touchState.ghost.parentNode.removeChild(touchState.ghost);
@@ -248,22 +286,45 @@ document.addEventListener('DOMContentLoaded', function () {
     touchState.ghost = null;
   }
 
+  /**
+   * Entfernt alle aktiven Drop-Highlight-Klassen.
+   */
   function clearDropTargets() {
     document.querySelectorAll('.puzzle-cell.drop-target, #thumbs.drop-target, .thumbs-container.drop-target').forEach(el => el.classList.remove('drop-target'));
   }
 
+  /**
+   * Bestimmt die Puzzle-Zelle unter einer Bildschirmkoordinate.
+   * @param {number} x
+   * @param {number} y
+   * @returns {HTMLElement|null} Gefundene Zelle oder null
+   */
   function findCellFromPoint(x, y) {
     const el = document.elementFromPoint(x, y);
     if (!el) return null;
     return el.closest('.puzzle-cell');
   }
 
+  /**
+   * Prüft, ob eine Bildschirmkoordinate über dem Thumbnails-Bereich liegt.
+   * @param {number} x
+   * @param {number} y
+   * @returns {boolean}
+   */
   function isOverThumbsArea(x, y) {
     let el = document.elementFromPoint(x, y);
     if (!el) return false;
     return !!el.closest('#thumbs') || !!el.closest('.thumbs-container');
   }
 
+  /**
+   * Kern-Drop-Logik für Mouse/Touch: setzt oder tauscht Teile im Grid.
+   * @param {Object} params
+   * @param {'thumbs'|'grid'} params.from - Quelle des Dragging
+   * @param {number} params.pieceIndex - Index des gezogenen Teils
+   * @param {number|null} params.sourceCellIndex - Ursprungszelle (nur bei Grid)
+   * @param {HTMLElement} params.targetCellEl - Zielzelle
+   */
   function performDropLogic({ from, pieceIndex, sourceCellIndex, targetCellEl }) {
     const n = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : 0;
     if (!targetCellEl) return;
@@ -285,6 +346,14 @@ document.addEventListener('DOMContentLoaded', function () {
     createGrid(n);
   }
 
+  /**
+   * Initialisiert Touch-Dragging-Status für Thumbs oder Grid-Zellen.
+   * @param {TouchEvent} e
+   * @param {'thumbs'|'grid'} from - Quelle
+   * @param {number} pieceIndex - Index im pieces-Array
+   * @param {number|null} cellIndex - Grid-Zellenindex (bei Quelle Grid)
+   * @param {HTMLElement} sourceEl - Element, das den Drag auslöste
+   */
   function handleTouchStartGeneric(e, from, pieceIndex, cellIndex, sourceEl) {
     if (!e || !e.changedTouches) return;
     if (e.changedTouches.length > 1) return; // ignore multi-touch
@@ -305,6 +374,9 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('touchcancel', touchEndHandler);
   }
 
+  /**
+   * Touch-Move-Handler: aktiviert Dragging nach kurzer Distanz und markiert mögliche Drop-Ziele.
+   */
   function touchMoveHandler(e) {
     if (!touchState.active) return;
     let t = null;
@@ -333,6 +405,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  /**
+   * Touch-End-Handler: führt Drop-Logik aus oder triggert Klick bei kurzem Tipp.
+   */
   function touchEndHandler(e) {
     if (!touchState.active) return;
     let t = null;
@@ -348,9 +423,11 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       const x = t.clientX; const y = t.clientY;
       const targetCell = findCellFromPoint(x, y);
+      // Drop auf Zelle
       if (targetCell) {
         performDropLogic({ from: touchState.from, pieceIndex: touchState.pieceIndex, sourceCellIndex: touchState.cellIndex, targetCellEl: targetCell });
       } else if (isOverThumbsArea(x, y)) {
+        // Drop auf Thumbs-Bereich: nur Rückgabe ins Lager bei from='grid'
         if (touchState.from === 'grid') {
           let placements = getPlacements();
           const idx = touchState.cellIndex;
@@ -367,6 +444,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // Cleanup
     clearDropTargets();
     if (touchState.sourceEl) touchState.sourceEl.classList.remove('touch-dragging');
     removeTouchGhost();
@@ -383,7 +461,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.removeEventListener('touchcancel', touchEndHandler);
   }
 
-  // create grid based on size (rows/cols similar to slice algorithm)
+  // generiere das Puzzle-Grid
+  /**
+   * Baut das Puzzle-Grid neu auf und synchronisiert Drag-/Drop-Handler pro Zelle.
+   * @param {number} n - Anzahl der erwarteten Teile
+   */
   function createGrid(n) {
     console.debug('createGrid called with n=', n, 'pieces.length=', pieces.length);
     if (!puzzleGrid) return;
@@ -395,14 +477,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const cols = Math.ceil(Math.sqrt(n));
     const rows = Math.ceil(n / cols);
-    puzzleGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
+    // responsive grid und rows
+    puzzleGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    puzzleGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+    // Lade Placements
     let placements = getPlacements();
     console.debug('createGrid: placements length=', placements.length, 'placements sample=', placements.slice(0,5));
     if (!Array.isArray(placements) || placements.length !== n) {
       placements = Array(n).fill(null);
       setPlacements(placements);
     }
+
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
@@ -412,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cell.className = 'puzzle-cell placeholder';
         cell.setAttribute('data-cell-index', idx);
         cell.setAttribute('role', 'gridcell');
+        // remove explicit width/height so CSS controls sizing
         // Nur belegte Zellen sind draggable
         const placed = placements[idx];
         if (placed) {
@@ -420,6 +508,10 @@ document.addEventListener('DOMContentLoaded', function () {
           const img = document.createElement('img');
           img.src = placed;
           img.setAttribute('draggable', 'true');
+          // ensure image fills cell but doesn't change layout
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'cover';
           cell.appendChild(img);
           cell.classList.remove('placeholder');
 
@@ -446,7 +538,7 @@ document.addEventListener('DOMContentLoaded', function () {
           }, { passive: true });
         }
 
-        // debug: when dragging over thumbs container/log
+        // debug: dragging über thumbs container/log
         if (thumbsContainer) {
           thumbsContainer.addEventListener('dragenter', (e) => { console.debug('dragenter thumbsContainer'); });
         }
@@ -454,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
           thumbs.addEventListener('dragenter', (e) => { console.debug('dragenter thumbs'); });
         }
 
-        // dragover/drop handlers
+        // drag über handlers
         cell.addEventListener('dragover', (e) => { e.preventDefault(); cell.classList.add('drop-target'); });
         cell.addEventListener('dragleave', () => { cell.classList.remove('drop-target'); });
         cell.addEventListener('drop', (e) => {
@@ -467,9 +559,6 @@ document.addEventListener('DOMContentLoaded', function () {
           const targetIdx = idx;
           if (from === 'thumbs') {
             // Aus der Leiste ins Grid
-            if (placements[targetIdx]) {
-              // Tausch: Teil aus Grid zurück in Leiste
-            }
             placements[targetIdx] = pieces[pieceIndex];
           } else if (from === 'grid') {
             // Tausch zwischen Zellen
@@ -485,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function () {
           createGrid(n);
         });
 
-        // Dragstart für Grid-Zellen (nur wenn belegt) - leave as a fallback für dragging the cell container
+        // Dragstart für Grid-Zellen (nur wenn belegt)
         cell.addEventListener('dragstart', (e) => {
           const placements = getPlacements();
           if (placements[idx]) {
@@ -530,6 +619,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  /**
+   * Rendert alle noch nicht platzierten Teile als Thumbnails und mischt die Reihenfolge.
+   */
   function renderPieceThumbs() {
     if (!thumbs) return;
     thumbs.innerHTML = '';
@@ -537,13 +629,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const placements = getPlacements();
     console.debug('renderPieceThumbs: pieces.length=', pieces.length, 'placements.length=', placements.length);
 
-    // Sammle unplatzierte Teile mit Originalindex
+    // Sammle unplatzierte Teile
     const unplaced = [];
     pieces.forEach((dataUrl, idx) => {
       if (!placements.includes(dataUrl)) unplaced.push({ dataUrl, idx });
     });
 
-    // Fisher-Yates shuffle
+    // shuffel
     for (let i = unplaced.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       const tmp = unplaced[i]; unplaced[i] = unplaced[j]; unplaced[j] = tmp;
@@ -563,7 +655,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // dragstart
       el.addEventListener('dragstart', (e) => {
-        // set fallback currentDrag
         currentDrag = { from: 'thumbs', pieceIndex: idx };
         e.dataTransfer.setData('text/plain', String(idx));
         e.dataTransfer.effectAllowed = 'move';
@@ -582,14 +673,13 @@ document.addEventListener('DOMContentLoaded', function () {
     adjustThumbSizes();
   }
 
-  // initialize
+  // inistialisiere das Grid und die Thumbnails
    const initialN = targetPiecesCount;
    console.debug('playZone:init', { sizeParam: size, piecesLength: pieces.length, initialN });
    if (!puzzleGrid) console.warn('playZone: puzzleGrid element not found');
    if (!thumbs) console.warn('playZone: thumbs element not found');
    createGrid(initialN);
    renderPieceThumbs();
-  // run a check in case placements were already present and complete
   (function () {
     try {
       checkSolved();
@@ -599,9 +689,12 @@ document.addEventListener('DOMContentLoaded', function () {
   })();
 
   // Ermögliche Drop auf die Thumbs-Leiste, um Teile aus dem Grid zurückzuholen
+  /**
+   * Ermöglicht Drop zurück in die Thumbnail-Leiste, um Grid-Zellen zu leeren.
+   * @param {DragEvent} e
+   */
   function handleThumbsDrop(e) {
     e.preventDefault();
-    // remove visual marker on both elements
     if (thumbs) thumbs.classList.remove('drop-target');
     if (thumbsContainer) thumbsContainer.classList.remove('drop-target');
     let from = e.dataTransfer.getData('from') || (currentDrag && currentDrag.from);
@@ -613,10 +706,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!isNaN(cellIdx) && placements[cellIdx]) {
         placements[cellIdx] = null;
         setPlacements(placements);
-        // update UI next tick
         setTimeout(() => {
           renderPieceThumbs();
-          // recalc n after change
           const nAfter = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : 0;
           createGrid(nAfter);
         }, 0);
@@ -624,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // document-level debug for drag events
+  // Debugging Drag Events auf Dokument-Ebene
   document.addEventListener('dragstart', (e) => { console.debug('document dragstart event, target=', e.target); });
   document.addEventListener('dragend', (e) => { console.debug('document dragend event, target=', e.target); });
 

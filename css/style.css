@@ -6,6 +6,11 @@ body {
   margin: 0;
 }
 
+html, body {
+  height: 100%;
+  overflow: hidden; /* verhindert vertikales Scrolling der Seite */
+}
+
 /* Navbar-Styling */
 .navbar.bg-white {
   background-color: #f8f9fa !important;
@@ -20,6 +25,11 @@ body {
 .navbar .nav-link.active {
   font-weight: 600;
   color: #0d6efd; /* Bootstrap-Primary */
+}
+
+main.container, main.d-flex {
+  height: calc(100vh - 72px); /* lässt Platz für die Navbar (~72px) */
+  overflow: hidden;
 }
 
 main.container {
@@ -45,7 +55,7 @@ main.container {
   transform: translateY(0);
 }
 
-/* Title / CTA Styling */
+/* Titel- und CTA-Styling */
 .text-center h1 {
   font-size: 2.25rem;
   font-weight: 700;
@@ -113,6 +123,7 @@ main.container {
   margin-bottom: 8px;
 }
 
+/* Schwierigkeits-/Größenbuttons (Schwierigkeit aktuell nicht eingebunden) */
 .difficulty-btn, .size-btn {
   border-radius: 8px;
   min-width: 64px;
@@ -151,7 +162,7 @@ main.container {
   .difficulty-btn, .size-btn { min-width: 48px; padding: 6px 8px; }
 }
 
-/* Make panel buttons share the available width equally */
+/* Styles für das Panel in configGame.html */
 .panel-body {
   display: flex; /* sicherstellen, dass .panel-body ein Flex-Container ist */
   gap: 0.5rem; /* konsistenter Abstand zwischen Buttons */
@@ -187,7 +198,7 @@ main.container {
   transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
 }
 
-/* Make outline buttons inside the config container readable: light grey bg + dark text */
+/* Umrandete Buttons in der Config gut lesbar machen: hellgrauer Hintergrund + dunkler Text */
 .config-container .btn.btn-outline-secondary {
   background-color: #ffffff; /* ersetzt #fffaeb */
   color: #212529; /* dunkler Text für Kontrast */
@@ -197,7 +208,7 @@ main.container {
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* Make outline-secondary buttons readable by default (not only on hover) */
+/* Outline-Secondary-Buttons allgemein lesbar halten (nicht nur beim Hover) */
 .btn-outline-secondary {
   background-color: transparent;
   color: #212529; /* dunkler Text für Lesbarkeit */
@@ -208,90 +219,142 @@ main.container {
 }
 
 /* Styles für playZone */
+:root {
+  --frame-radius: 20px;
+  --frame-ring: 12px;
+  --frame-gap: 14px; /* innere Lücke zwischen Rahmen und Grid */
+  --placeholder-bg: #fbfaf8; /* sehr helles Neutral für den Hintergrund */
+  --cell-gap: 6px; /* Abstand zwischen Puzzleteilen */
+}
+
 .frame {
-  /* konfigurierbare Werte für gleichmäßigen Rahmen */
-  --frame-radius: 20px; /* äußere Rundung des Rahmens */
-  --frame-ring: 12px;   /* sichtbare Holzrahmenstärke */
-  --frame-gap: 12px;    /* Abstand zwischen Rahmen und Puzzle */
-
-  background: transparent;
+  background: transparent; /* kein sichtbarer Hintergrund, Rahmen sitzt am Platzhalter */
   border-radius: var(--frame-radius);
-  border: var(--frame-ring) solid #8b5a2b; /* tatsächlicher Holzrahmen */
-  padding: var(--frame-gap); /* gleichmäßiger Innenabstand */
-
+  border: none; /* Rahmen jetzt am Platzhalter statt am Frame */
+  padding: 0; /* kein Abstand zwischen Frame und Platzhalter */
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
   box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
 }
 
-/* Puzzle-Radius so setzen, dass die inneren Ecken des Rahmens und das Puzzle harmonieren */
 .puzzle-placeholder {
-  width: 520px;
-  max-width: 90vw;
-  height: 320px;
-  background: #d0d0d0; /* graues Rechteck als Platzhalter */
-  /* Innere Rundung entspricht äußere Rundung minus Rahmenstärke, sicher gegen negative Werte */
-  border-radius: clamp(0px, calc(var(--frame-radius) - var(--frame-ring)), var(--frame-radius));
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-  border: none;
+  width: min(720px, 86vw);
+  height: min(520px, calc(100vh - 240px));
+  max-height: calc(100vh - 240px);
+  overflow: hidden; /* schneidet Inhalt an der Border ab */
+  border-radius: var(--frame-radius); /* gleiche Rundung wie der Frame */
+  padding: 0; /* Grid soll direkt an die Border stoßen */
   box-sizing: border-box;
+  background: transparent; /* kein inneres Weiß */
+
+  /* sichtbarer Rahmen sitzt direkt am Platzhalter und umschließt das Grid */
+  border: var(--frame-ring) solid #8b5a2b;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
 }
 
-@media (max-width: 576px) {
-  .puzzle-placeholder { height: 220px; }
-}
-
-/* Puzzle Grid inside puzzle-placeholder */
 .puzzle-grid {
   width: 100%;
   height: 100%;
   display: grid;
-  gap: 6px;
+  gap: 0; /* kein Abstand, damit Zellen direkt die Border berühren */
   align-items: stretch;
   justify-items: stretch;
+  background: transparent;
+  padding: 0; /* kein zusätzlicher Abstand zum Rand */
+  box-sizing: border-box;
+  grid-auto-rows: 1fr; /* Zeilen proportional zu den Spalten halten */
 }
 .puzzle-cell {
-  background: #e9e9e9;
-  border-radius: 6px;
+  background: #eaeaea;
+  border-radius: 0; /* innere Abrundungen entfernt, um bündig anzuschließen */
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  border: 3px solid #f3f3f3;
+  border: 0; /* kein innerer Rahmen für Symmetrie */
+  aspect-ratio: 1 / 1; /* Zellen bleiben quadratisch, damit das Grid sauber füllt */
 }
 .puzzle-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.puzzle-cell.placeholder { background: #dcdcdc; }
+.puzzle-cell.placeholder { background: #e0e0e0; }
 .puzzle-cell.drop-target {
   outline: 3px dashed rgba(36,79,63,0.7);
   transition: outline 120ms ease;
 }
 
-/* Thumb selected/placed state */
-.thumb.placed { opacity: 0.5; filter: grayscale(30%); }
-.thumb[draggable="true"] { cursor: grab; }
-.thumb:active { cursor: grabbing; }
+/* sicherstellen, dass der Puzzle-Inhalt zentriert bleibt unter dem Rahmen */
+.frame, .puzzle-placeholder { margin-left: auto; margin-right: auto; }
 
-/* Thumbnail-Bilder skalieren */
+/* Hinweis-Thumb (derzeit ungenutzt) für fehlende Puzzlestücke */
+.thumb.empty-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 0.9rem;
+  background: #f7f7f7;
+  border: 1px dashed #ccc;
+  cursor: default;
+}
+
+/* Thumbnails-Leiste horizontal scrollen */
+.thumbs-bar {
+  width: 100%;
+  align-items: center;
+}
+.thumbs-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-height: 120px;
+}
+.thumbs {
+  display: inline-flex;
+  gap: 8px;
+  align-items: stretch;
+  width: max-content;
+}
+.thumb {
+  flex: 0 0 auto;
+  overflow: hidden; /* verhindert, dass Bilder aus dem Thumb ragen */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 .thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* verhindert Zuschneiden/Zoomen der Thumbs */
   display: block;
   border-radius: 4px;
 }
 
-.thumb:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
-
-.arrow-btn {
-  min-width: 44px;
-  min-height: 44px;
+/* Ghost-Bild während Touch-Dragging */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  width: 80px;
+  height: auto;
+  opacity: 0.95;
   border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transform: translate3d(0,0,0);
 }
 
-/* Einstellungen-Button: gleiche Größe/Form wie .nav-btn, aber mit eigenem Farbschema */
+/* Kleine visuelle Abschwächung des Originalelements beim Touch-Dragging */
+.touch-dragging {
+  opacity: 0.6;
+  filter: brightness(0.95) saturate(0.9);
+  transition: opacity 120ms ease;
+}
+
+/* Einstellungen-Button: gleiche Form wie .nav-btn, eigenes Farbschema */
 .settings-btn {
   display: inline-flex;
   align-items: center;
@@ -300,12 +363,12 @@ main.container {
   font-size: 1rem;
   line-height: 1;
   min-height: 40px; /* gleiche Mindesthöhe wie .nav-btn */
-  min-width: 84px; /* selbe Mindestbreite */
+  min-width: 84px; /* gleiche Mindestbreite */
 
   background-color: #f0a44d;
   color: #ffffff;
   border: none;
-  border-radius: 999px; /* Pill-Form wie .nav-btn */
+  border-radius: 999px; /* Pillen-Form wie .nav-btn */
   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
   transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
 }
@@ -316,7 +379,7 @@ main.container {
   box-shadow: 0 10px 22px rgba(0,0,0,0.14);
 }
 
-/* Puzzle-Auswahl Seite: Kacheln */
+/* Kachel-Styling für eine Puzzle-Auswahlseite (derzeit nicht eingebunden) */
 .puzzle-card {
   width: 100%;
   padding-top: 66.66%; /* 3:2 Verhältnis, Höhe über padding trick */
@@ -332,20 +395,13 @@ main.container {
 .puzzle-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.14); }
 .puzzle-card::after { content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; border-radius: 8px; }
 
-/* ensure default button text is readable (not only on hover) */
+/* Standard-Buttontext lesbar halten (nicht nur beim Hover) */
 .btn { color: #212529; }
 
-/* Make nav buttons (Home / Auswählen) always have white text */
+/* Navbar-Buttons (Home / Auswählen) haben immer weißen Text */
 .nav-btn,
 .nav-btn * {
   color: #ffffff !important;
-}
-
-/* Auswahl-Buttons im Einstellungen-Modal */
-#settingsModal .count-btn.selected {
-  background-color: #234f3f !important;
-  color: #ffffff !important;
-  border-color: #234f3f !important;
 }
 
 /* Farben für Buttons im Einstellungen-Modal */
@@ -390,55 +446,4 @@ main.container {
   border-color: #bf6f24;
   color: #ffffff;
   transform: translateY(-1px);
-}
-
-/* Hinweis für fehlende Puzzlestücke */
-.thumb.empty-hint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  font-size: 0.9rem;
-  background: #f7f7f7;
-  border: 1px dashed #ccc;
-  cursor: default;
-}
-
-/* Thumbnails-Leiste horizontal scrollen */
-.thumbs-bar {
-  width: 100%;
-}
-.thumbs-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-}
-.thumbs {
-  display: inline-flex;
-  gap: 8px;
-  align-items: stretch;
-  width: max-content;
-}
-.thumb {
-  flex: 0 0 auto;
-}
-
-/* Ghost image while touch-dragging */
-.drag-ghost {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  width: 80px;
-  height: auto;
-  opacity: 0.95;
-  border-radius: 8px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-  transform: translate3d(0,0,0);
-}
-
-/* small visual cue for the original element while touch-dragging */
-.touch-dragging {
-  opacity: 0.6;
-  filter: brightness(0.95) saturate(0.9);
-  transition: opacity 120ms ease;
 }

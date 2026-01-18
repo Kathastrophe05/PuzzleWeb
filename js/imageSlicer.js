@@ -1,6 +1,4 @@
 /**
- * imageSlicer.js
- *
  * Utility zum Zerschneiden eines PNG/JPEG (File oder DataURL) in N Teile (Raster) und Speichern der Teile.
  * Browser-API (keine Module) - stellt ein globales Objekt `ImageSlicer` bereit.
  *
@@ -21,9 +19,9 @@
   const ImageSlicer = {};
 
   /**
-   * Reads a File object as a Data URL.
+   * Liest ein File-Objekt und gibt dessen Data-URL zurück.
    * @param {File} file
-   * @returns {Promise<string>} Data URL
+   * @returns {Promise<string>} Data-URL
    */
   ImageSlicer.readFileAsDataURL = function (file) {
     return new Promise((resolve, reject) => {
@@ -36,17 +34,17 @@
   };
 
   /**
-   * Slice an image (DataURL or File) into n pieces and return array of DataURLs.
-   * Uses full image; if aspect differs from grid, it stretches to fit (no cropping).
-   * @param {string|File} input - dataURL string or File
-   * @param {number} n - desired number of pieces (positive integer)
+   * Schneidet ein Bild (DataURL oder File) in n Teile und gibt ein Array von Data-URLs zurück.
+   * Verwendet das gesamte Bild; falls das Seitenverhältnis vom Raster abweicht, wird das Bild gestreckt (kein Zuschneiden).
+   * @param {string|File} input - dataURL string oder File
+   * @param {number} n - gewünschte Anzahl von Teilen (positive Ganzzahl)
    * @param {{mime?: string, quality?: number, maxSide?: number, stretchToRatio?: boolean, targetRatio?: number}} [options]
-   *        options.mime: 'image/png' (default) or 'image/jpeg'
-   *        options.quality: number 0..1 used for JPEG
-   *        options.maxSide: max width/height of processed image (scales down if larger)
-   *        options.stretchToRatio: stretch width/height to targetRatio instead of cropping
-   *        options.targetRatio: width/height ratio to enforce when stretching; defaults to grid ratio
-   * @returns {Promise<string[]>} - resolves to array of data URLs length === n (or less if input error)
+   *        options.mime: 'image/png' (Standard) oder 'image/jpeg'
+   *        options.quality: Zahl 0..1, verwendet für JPEG
+   *        options.maxSide: maximale Breite/Höhe des verarbeiteten Bildes (skaliert bei größeren Bildern herunter)
+   *        options.stretchToRatio: Bild non-uniform strecken, um targetRatio zu erreichen anstatt es zu beschneiden
+   *        options.targetRatio: Breite/Höhe-Verhältnis, das beim Strecken erzwungen werden soll; standardmäßig das Rasterverhältnis
+   * @returns {Promise<string[]>} - löst mit einem Array von Data-URLs auf, Länge === n (oder weniger bei Eingabefehlern)
    */
   ImageSlicer.sliceImageToPieces = async function (input, n, options) {
     if (!n || typeof n !== 'number' || n <= 0) throw new TypeError('n must be a positive integer');
@@ -143,7 +141,7 @@
   };
 
   /**
-   * Save array of dataURLs to localStorage under key. Returns true on success.
+   * Speichert ein Array von Data-URLs unter dem angegebenen key in localStorage. Gibt true bei Erfolg zurück.
    * @param {string} key
    * @param {string[]} pieces
    * @returns {boolean}
@@ -166,7 +164,7 @@
   };
 
   /**
-   * Load pieces array from localStorage key
+   * Lädt das Array von Data-URLs aus localStorage unter key
    * @param {string} key
    * @returns {string[]|null}
    */

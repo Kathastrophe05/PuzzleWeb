@@ -1,10 +1,18 @@
 // Initialisierungs-Skript für index.html
-
+/** JS für index.html: Navigation aktiv setzen, Bootstrap Tooltips initialisieren
+ *
+ * Funktionen:
+ * - Setzt den aktiven Navigationslink basierend auf URL (Pfad oder Hash)
+ * - Initialisiert Bootstrap Tooltips
+ *
+ * Hinweise:
+ * - Funktioniert mit Bootstrap 5
+ */
 document.addEventListener('DOMContentLoaded', function () {
   try {
     const navLinks = Array.from(document.querySelectorAll('.navbar .nav-link'));
 
-    // Wenn alle Links nur '#' sind, ändere nichts (vermeide unerwünschtes Entfernen von 'active')
+    // Wenn alle Links nur '#' sind, ändere nichts
     const allHashes = navLinks.length > 0 && navLinks.every(l => (l.getAttribute('href') || '').trim() === '#');
     if (!allHashes) {
       const currentHash = location.hash || '';
@@ -12,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
       navLinks.forEach(link => {
         const href = (link.getAttribute('href') || '').trim();
-        // Normalfälle behandeln
         let isActive = false;
         if (href && href !== '#') {
           if (href === currentHash || href === currentPath) isActive = true;

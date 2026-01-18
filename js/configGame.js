@@ -1,5 +1,17 @@
 // JS für configGame.html: Auswahllogik und Start-Weiterleitung
-
+/**
+ * JS für configGame.html: Auswahllogik und Start-Weiterleitung
+ *
+ * Funktionen:
+ * - Auswahl der Puzzle-Größe (Anzahl Teile)
+ * - Bild-Upload und Zerschneiden in Teile via ImageSlicer
+ * - Start-Button: Validierung, Speichern der Teile in localStorage, Weiterleitung mit Query-Parametern
+ *
+ * Hinweise:
+ * - Benötigt ImageSlicer (js/imageSlicer.js) für Bild-Zerschneidung
+ * - Speichert die Bildteile in localStorage unter 'puzzlePieces'
+ * - Query-Parameter: size (Anzahl Teile)
+ */
 document.addEventListener('DOMContentLoaded', function () {
   let selectedSize = null;
 
@@ -13,6 +25,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const MAX_FILE_SIZE = 6 * 1024 * 1024; // 6MB Schutz für localStorage
 
+  /** setze Feedback-Nachricht für Bild-Upload
+   * @param {string} msg - Nachricht
+   * @param {boolean} isError - ob es sich um eine Fehlermeldung handelt
+   * */
   function setFeedback(msg, isError = false) {
     if (!imageFeedback) return;
     imageFeedback.textContent = msg;
@@ -20,18 +36,26 @@ document.addEventListener('DOMContentLoaded', function () {
     imageFeedback.classList.toggle('text-muted', !isError);
   }
 
+    /** Berechne ein Raster (cols, rows) für n Teile
+     * @param {number} n - Anzahl der Teile
+     * @returns {{cols: number, rows: number}} - Spalten und Reihen
+     * */
   function gridFromCount(n) {
     const cols = Math.ceil(Math.sqrt(n));
     const rows = Math.ceil(n / cols);
     return { cols, rows };
   }
 
+    /** Aktualisiere aria-pressed Attribute für Button-Gruppe
+     * @param {HTMLElement[]} group - Array von Buttons
+     * */
   function updateAriaPressed(group) {
     group.forEach(btn => {
       btn.setAttribute('aria-pressed', btn.classList.contains('selected'));
     });
   }
 
+  /** Größe-Auswahl-Buttons */
   sizeButtons.forEach(btn => {
     btn.addEventListener('click', function () {
       sizeButtons.forEach(b => b.classList.remove('selected'));
@@ -47,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Image upload handling
+    /** Bild-Upload und Vorschau */
   if (imageInput) {
     imageInput.addEventListener('change', function (e) {
       const file = e.target.files && e.target.files[0];
@@ -74,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // remove difficulty validation; only size must be selected
+  // entferne alte Daten im localStorage
   startButton.addEventListener('click', async function () {
     if (!selectedSize) {
       startButton.classList.add('invalid');
@@ -105,7 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       } catch (err) {
         console.error('Fehler beim Zerteilen des Bildes', err);
-        setFeedback('Das Bild konnte nicht verarbeitet werden.', true);
+        const errorDetail = err && err.message ? ': ' + err.message : '';
+        setFeedback('Das Bild konnte nicht verarbeitet werden' + errorDetail, true);
       }
     } else {
       // Keinen Upload: entferne ggf. vorhandene pieces

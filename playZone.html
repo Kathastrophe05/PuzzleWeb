@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="js/bootstrap.js"></script>
 </head>
+<!-- Body für die Spielzone -->
 <body>
   <!-- Navbar (wie index.html) + zusätzliches Einstellungen-Symbol -->
   <nav class="navbar navbar-expand-lg navbar-light bg-white">
@@ -22,7 +23,6 @@
             <a class="btn nav-btn d-inline-flex align-items-center" href="index.html" role="button">Home</a>
           </li>
           <li class="nav-item">
-            <!-- grüner Button (wie .nav-btn) bleibt, daneben ein Einstellungs-Icon -->
             <div class="d-flex align-items-center">
               <button class="btn settings-btn" id="open-settings" title="Einstellungen"><span class="settings-icon" aria-hidden="true">⚙</span><span class="visually-hidden">Einstellungen</span></button>
             </div>
@@ -32,8 +32,8 @@
     </div>
   </nav>
 
-  <main class="container py-4">
-    <div class="d-flex flex-column align-items-center">
+  <main class="container d-flex flex-column align-items-center justify-content-center min-vh-100 py-2">
+    <div class="d-flex flex-column align-items-center w-100">
       <div id="selection-info" class="mb-3 text-muted small"></div>
 
       <div class="frame mb-4">
@@ -44,13 +44,13 @@
       </div>
 
       <div class="thumbs-bar d-flex align-items-center w-100">
-        <button class="btn arrow-btn me-2" id="thumbs-left">❮</button>
+        <button class="btn arrow-btn me-2" id="thumbs-left" aria-label="Vorherige Puzzleteile">❮</button>
         <div class="thumbs-container flex-grow-1">
           <div class="thumbs" id="thumbs">
             <!-- thumbnails werden hier von JS eingefügt -->
           </div>
         </div>
-        <button class="btn arrow-btn ms-2" id="thumbs-right">❯</button>
+        <button class="btn arrow-btn ms-2" id="thumbs-right" aria-label="Nächste Puzzleteile">❯</button>
       </div>
     </div>
   </main>
@@ -82,7 +82,7 @@
     </div>
   </div>
 
-  <!-- Victory Modal: shown when puzzle is completed correctly -->
+  <!-- Siegesanzeige wenn das Puzzel vollständig gelöst wurde -->
   <div class="modal fade" id="victoryModal" tabindex="-1" aria-labelledby="victoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
