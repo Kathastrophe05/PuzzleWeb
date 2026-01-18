@@ -8,7 +8,7 @@ body {
 
 html, body {
   height: 100%;
-  overflow: hidden; /* verhindert vertikales Scrolling der Seite */
+  overflow: auto; /* Scrollen auf allen Seiten erlauben */
 }
 
 /* Navbar-Styling */
@@ -142,24 +142,6 @@ main.container {
   pointer-events: none;
 }
 
-@media (max-width: 992px) {
-  .accent-home { top: calc(50% + 3rem); height: 130%; }
-  .text-center { margin-bottom: 6vh; }
-  .accent-rect { top: calc(50% + 3rem); height: 180px; }
-}
-
-@media (max-width: 576px) {
-  .accent-rect { top: calc(50% + 3rem); height: 42px; border-radius: 18px; }
-  .accent-home { top: calc(50% + 3rem); height: 160%; }
-  .text-center { margin-bottom: 10vh; }
-}
-
-/* Kleinere Bildschirm-Anpassung */
-@media (max-width: 576px) {
-  .nav-btn { padding: 0.35rem 0.75rem; }
-  .settings-btn { padding: 0.35rem 0.75rem; }
-}
-
 /* Styles für configGame.html */
 .config-container {
   width: 100%;
@@ -205,16 +187,11 @@ main.container {
 /* Button-Wrapper: keine zusätzliche top-margin mehr */
 .config-container .text-center { margin: 0 !important; }
 
-
-@media (max-width: 420px) {
-  .config-container { gap: 0.6rem; padding: 14px; }
-}
-
 /* Selected state für Buttons in der Config-Seite */
 .config-container .btn.difficulty-btn.selected,
 .config-container .btn.size-btn.selected,
 .config-container .btn.btn-outline-secondary.selected {
-  background-color: #234f3f !important; /* dunkleres Grün als Override */
+  background-color: #2a614d !important; /* angepasst: gewünschtes Grün */
   color: #ffffff !important;
   border-color: #173b30 !important; /* dunklere Border für Kontrast */
   box-shadow: 0 10px 30px rgba(36,79,63,0.18), inset 0 -3px 0 rgba(0,0,0,0.06) !important;
@@ -226,7 +203,7 @@ main.container {
 .config-container .btn.size-btn[aria-pressed="true"],
 .config-container .btn.difficulty-btn[aria-pressed="true"],
 .config-container .btn[aria-pressed="true"] {
-  background-color: #234f3f !important;
+  background-color: #2a614d !important;
   color: #ffffff !important;
   border-color: #173b30 !important;
   box-shadow: 0 10px 30px rgba(36,79,63,0.18), inset 0 -3px 0 rgba(0,0,0,0.06) !important;
@@ -437,4 +414,3 @@ main.container {
   border-color: #173b30 !important;
   color: #ffffff !important;
 }
-
