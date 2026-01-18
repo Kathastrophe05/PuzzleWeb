@@ -140,15 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   console.debug('playZone: loaded puzzlePieces from localStorage, count=', pieces.length);
 
-  if ((!pieces || pieces.length === 0) && size && Number(size) > 0) {
-    // show user hint in UI that no pieces were found (helpful debugging for user)
-    if (info) info.textContent = info.textContent + ' · Hinweis: Keine Puzzleteile in localStorage gefunden. Bitte erstelle Teile in der Konfiguration.';
-  }
-
-  const expectedPieces = size > 0 ? size : pieces.length;
-  if (expectedPieces && pieces.length > expectedPieces) {
-    pieces = pieces.slice(0, expectedPieces);
-  }
+  const FALLBACK_PIECE_COUNT = 9; // 3x3 Standard, falls nichts konfiguriert ist
+  let targetPiecesCount = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : FALLBACK_PIECE_COUNT;
+  if (targetPiecesCount < 1) targetPiecesCount = FALLBACK_PIECE_COUNT;
 
   // If no pieces were found, create simple placeholder pieces so the UI shows a puzzle
   function createPlaceholderPieces(n) {
@@ -166,15 +160,18 @@ document.addEventListener('DOMContentLoaded', function () {
     return out;
   }
 
-  // If no pieces exist but we have a requested size, generate placeholders and persist them
-  if ((!pieces || pieces.length === 0) && expectedPieces && expectedPieces > 0) {
-    console.debug('No pieces found; generating', expectedPieces, 'placeholder pieces');
-    pieces = createPlaceholderPieces(expectedPieces);
+  // If no pieces exist but we have a requested size (or fallback), generate placeholders and persist them
+  if ((!pieces || pieces.length === 0)) {
+    console.debug('No pieces found; generating', targetPiecesCount, 'placeholder pieces');
+    pieces = createPlaceholderPieces(targetPiecesCount);
     try {
       localStorage.setItem(PIECES_KEY, JSON.stringify(pieces));
       // clear any old placements so grid will initialize clean
       localStorage.removeItem(PLACEMENTS_KEY);
     } catch (e) { console.error('Failed to save placeholder pieces to localStorage', e); }
+  } else if (pieces.length < targetPiecesCount) {
+    // trim targetPiecesCount down to available pieces if fewer
+    targetPiecesCount = pieces.length;
   }
 
   // Fallback-Objekt für Drag-Informationen (sicherer als allein dataTransfer)
@@ -572,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // initialize
-   const initialN = (size && Number(size) > 0) ? Number(size) : (pieces && pieces.length) ? pieces.length : 0;
+   const initialN = targetPiecesCount;
    console.debug('playZone:init', { sizeParam: size, piecesLength: pieces.length, initialN });
    if (!puzzleGrid) console.warn('playZone: puzzleGrid element not found');
    if (!thumbs) console.warn('playZone: thumbs element not found');
