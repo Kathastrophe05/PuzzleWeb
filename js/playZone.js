@@ -536,8 +536,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // Zeige nur nicht platzierte Teile
     const placements = getPlacements();
     console.debug('renderPieceThumbs: pieces.length=', pieces.length, 'placements.length=', placements.length);
+
+    // Sammle unplatzierte Teile mit Originalindex
+    const unplaced = [];
     pieces.forEach((dataUrl, idx) => {
-      if (placements.includes(dataUrl)) return; // bereits platziert
+      if (!placements.includes(dataUrl)) unplaced.push({ dataUrl, idx });
+    });
+
+    // Fisher-Yates shuffle
+    for (let i = unplaced.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = unplaced[i]; unplaced[i] = unplaced[j]; unplaced[j] = tmp;
+    }
+
+    // Render die gemischte Liste
+    unplaced.forEach(({ dataUrl, idx }) => {
       const el = document.createElement('div');
       el.className = 'thumb';
       el.setAttribute('draggable', 'true');
@@ -565,6 +578,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       thumbs.appendChild(el);
     });
+
     adjustThumbSizes();
   }
 

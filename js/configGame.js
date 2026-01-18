@@ -1,10 +1,8 @@
 // JS für configGame.html: Auswahllogik und Start-Weiterleitung
 
 document.addEventListener('DOMContentLoaded', function () {
-  let selectedDifficulty = null;
   let selectedSize = null;
 
-  const difficultyButtons = Array.from(document.querySelectorAll('.difficulty-btn'));
   const sizeButtons = Array.from(document.querySelectorAll('.size-btn'));
   const startButton = document.getElementById('start-game');
 
@@ -33,21 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.setAttribute('aria-pressed', btn.classList.contains('selected'));
     });
   }
-
-  difficultyButtons.forEach(btn => {
-    btn.addEventListener('click', function () {
-      difficultyButtons.forEach(b => b.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedDifficulty = this.getAttribute('data-difficulty');
-      updateAriaPressed(difficultyButtons);
-    });
-    btn.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        this.click();
-      }
-    });
-  });
 
   sizeButtons.forEach(btn => {
     btn.addEventListener('click', function () {
@@ -91,10 +74,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // remove difficulty validation; only size must be selected
   startButton.addEventListener('click', async function () {
-    // Wenn keine Auswahl getroffen wurde, zeige eine kurze visuelle Rückmeldung
-    if (!selectedDifficulty || !selectedSize) {
-      // einfacher visueller Hinweis: kurz die Schaltfläche schütteln (CSS class)
+    if (!selectedSize) {
       startButton.classList.add('invalid');
       setTimeout(() => startButton.classList.remove('invalid'), 400);
       return;
@@ -131,8 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
       localStorage.removeItem('puzzlePlacements');
     }
 
-    // Weiterleitung mit Query-Parametern
-    const params = new URLSearchParams({ difficulty: selectedDifficulty, size: selectedSize });
+    // Weiterleitung mit Query-Parametern (nur size)
+    const params = new URLSearchParams({ size: selectedSize });
     window.location.href = 'playZone.html?' + params.toString();
   });
 
