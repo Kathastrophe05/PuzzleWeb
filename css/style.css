@@ -1,0 +1,424 @@
+/* Grundlegende Seite */
+body {
+  background-color: #f8f9fa; /* leichtes Grau, hilft Kontrast zur weißen Navbar */
+  color: #212529;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin: 0;
+}
+
+/* Navbar-Styling */
+.navbar.bg-white {
+  background-color: #f8f9fa !important;
+}
+.navbar {
+  box-shadow: none; /* entfernt Schatten */
+  border-bottom: none; /* stellt sicher, dass keine Linie vorhanden ist */
+}
+.navbar .navbar-brand {
+  font-weight: 600;
+}
+.navbar .nav-link.active {
+  font-weight: 600;
+  color: #0d6efd; /* Bootstrap-Primary */
+}
+
+main.container {
+  padding-top: 1rem;
+}
+
+/* Button in der Navbar */
+.nav-btn {
+  background-color: #2a614d;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px; /* stark abgerundet */
+  transition: background-color 150ms ease, transform 120ms ease;
+}
+.nav-btn:hover,
+.nav-btn:focus {
+  background-color: #234f3f; /* etwas dunkler bei Hover */
+  color: #fff;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+.nav-btn:active {
+  transform: translateY(0);
+}
+
+/* Title / CTA Styling */
+.text-center h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+.text-center .cta-btn {
+  background-color: #f0a44d;
+  color: #ffffff; /* Textfarbe angepasst */
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px; /* gleiche abgerundeten Ecken wie .nav-btn */
+  margin-top: 1rem; /* Erhöht für bessere Sichtbarkeit */
+  display: inline-block; /* sicherstellen, dass Button sichtbar ist */
+  visibility: visible;
+  opacity: 1;
+  z-index: 2;
+  box-shadow: 0 .12rem .35rem rgba(0,0,0,.08); /* leichter Schatten */
+}
+.text-center .cta-btn:hover,
+.text-center .cta-btn:focus {
+  background-color: #e5943f;
+  color: #ffffff; /* Text bleibt angepasst beim Hover */
+  text-decoration: none;
+}
+
+/* Accent-Rect: bündig mit .container, stark abgerundet */
+.accent-rect {
+  width: 100%;
+  height: 300px; /* Basis-Höhe, kann auf kleineren Bildschirmen verringert werden */
+  background-color: #7ca38e;
+  border-radius: 24px; /* stark abgerundet */
+  margin-left: 0; /* bündig mit .container */
+  margin-right: 0;
+  margin-top: 6rem; /* Abstand verdoppelt (vorher 3rem) */
+}
+
+@media (max-width: 576px) {
+  .accent-rect { height: 42px; border-radius: 18px; margin-top: 4rem; }
+}
+
+/* Kleinere Bildschirm-Anpassung */
+@media (max-width: 576px) {
+  .nav-btn { padding: 0.35rem 0.75rem; }
+}
+
+/* Styles für configGame.html */
+.config-container {
+  width: 100%;
+  max-width: 520px;
+  background: #f6faf6;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  margin: 16px;
+}
+
+.config-container .panel {
+  background: #e4f5ec;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.config-container .panel-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.difficulty-btn, .size-btn {
+  border-radius: 8px;
+  min-width: 64px;
+}
+
+/* Selected state für Buttons */
+.difficulty-btn.selected, .size-btn.selected {
+  background-color: #2a614d;
+  color: #fff;
+  border-color: #234f3f;
+}
+
+/* Selected (ausgewählt) Zustand für Config-Outline-Buttons */
+.config-container .btn.btn-outline-secondary.selected {
+  background-color: #234f3f !important; /* gewünscht: #234f3f */
+  color: #ffffff !important; /* Text soll weiß bleiben für Kontrast */
+  border-color: #234f3f !important;
+}
+
+/* visual cue wenn Start ohne Auswahl geklickt wird */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+.btn.invalid {
+  animation: shake 0.36s ease;
+}
+
+/* Mobile Anpassungen */
+@media (max-width: 480px) {
+  .config-container { padding: 14px; margin: 12px; }
+  .difficulty-btn, .size-btn { min-width: 48px; padding: 6px 8px; }
+}
+
+/* Make panel buttons share the available width equally */
+.panel-body {
+  display: flex; /* sicherstellen, dass .panel-body ein Flex-Container ist */
+  gap: 0.5rem; /* konsistenter Abstand zwischen Buttons */
+  align-items: center;
+}
+
+.panel-body > .btn {
+  flex: 1 1 0; /* gleiche Breite, dehnbar/zusammenziehbar */
+  min-width: 0; /* verhindert Overflow bei langen Texten */
+  text-align: center;
+}
+
+/* Für sehr kleine Bildschirme erlauben wir, dass die Größen-Buttons umbrechen */
+@media (max-width: 420px) {
+  .panel-body { flex-wrap: wrap; }
+  .panel-body > .btn { flex: 1 1 40%; }
+}
+
+/* Hover-Farbe für die weißen Buttons auf der Config-Seite */
+.difficulty-btn.btn-outline-secondary:hover,
+.size-btn.btn-outline-secondary:hover,
+.difficulty-btn.btn-outline-secondary:focus,
+.size-btn.btn-outline-secondary:focus,
+.difficulty-btn.btn-outline-secondary:active,
+.size-btn.btn-outline-secondary:active {
+  background-color: #7ca38e !important;
+  color: #ffffff !important;
+  border-color: #7ca38e !important;
+}
+
+.difficulty-btn.btn-outline-secondary,
+.size-btn.btn-outline-secondary {
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+/* Make outline buttons inside the config container readable: light grey bg + dark text */
+.config-container .btn.btn-outline-secondary {
+  background-color: #ffffff; /* ersetzt #fffaeb */
+  color: #212529; /* dunkler Text für Kontrast */
+  border-color: #d6d6d6;
+}
+.config-container .btn.btn-outline-secondary:focus {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* Make outline-secondary buttons readable by default (not only on hover) */
+.btn-outline-secondary {
+  background-color: transparent;
+  color: #212529; /* dunkler Text für Lesbarkeit */
+  border-color: #d6d6d6;
+}
+.btn-outline-secondary:focus {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* Styles für playZone */
+.frame {
+  /* konfigurierbare Werte für gleichmäßigen Rahmen */
+  --frame-radius: 20px; /* äußere Rundung des Rahmens */
+  --frame-ring: 12px;   /* sichtbare Holzrahmenstärke */
+  --frame-gap: 12px;    /* Abstand zwischen Rahmen und Puzzle */
+
+  background: transparent;
+  border-radius: var(--frame-radius);
+  border: var(--frame-ring) solid #8b5a2b; /* tatsächlicher Holzrahmen */
+  padding: var(--frame-gap); /* gleichmäßiger Innenabstand */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  box-sizing: border-box;
+}
+
+/* Puzzle-Radius so setzen, dass die inneren Ecken des Rahmens und das Puzzle harmonieren */
+.puzzle-placeholder {
+  width: 520px;
+  max-width: 90vw;
+  height: 320px;
+  background: #d0d0d0; /* graues Rechteck als Platzhalter */
+  /* Innere Rundung entspricht äußere Rundung minus Rahmenstärke, sicher gegen negative Werte */
+  border-radius: clamp(0px, calc(var(--frame-radius) - var(--frame-ring)), var(--frame-radius));
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  border: none;
+  box-sizing: border-box;
+}
+
+@media (max-width: 576px) {
+  .puzzle-placeholder { height: 220px; }
+}
+
+/* Puzzle Grid inside puzzle-placeholder */
+.puzzle-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 6px;
+  align-items: stretch;
+  justify-items: stretch;
+}
+.puzzle-cell {
+  background: #e9e9e9;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 3px solid #f3f3f3;
+}
+.puzzle-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.puzzle-cell.placeholder { background: #dcdcdc; }
+.puzzle-cell.drop-target {
+  outline: 3px dashed rgba(36,79,63,0.7);
+  transition: outline 120ms ease;
+}
+
+/* Thumb selected/placed state */
+.thumb.placed { opacity: 0.5; filter: grayscale(30%); }
+.thumb[draggable="true"] { cursor: grab; }
+.thumb:active { cursor: grabbing; }
+
+/* Thumbnail-Bilder skalieren */
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
+
+.thumb:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
+
+.arrow-btn {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 8px;
+}
+
+/* Einstellungen-Button: gleiche Größe/Form wie .nav-btn, aber mit eigenem Farbschema */
+.settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.9rem; /* gleiche Abmessungen wie .nav-btn */
+  font-size: 1rem;
+  line-height: 1;
+  min-height: 40px; /* gleiche Mindesthöhe wie .nav-btn */
+  min-width: 84px; /* selbe Mindestbreite */
+
+  background-color: #f0a44d;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px; /* Pill-Form wie .nav-btn */
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+.settings-btn:hover,
+.settings-btn:focus {
+  background-color: #e5943f;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+}
+
+/* Puzzle-Auswahl Seite: Kacheln */
+.puzzle-card {
+  width: 100%;
+  padding-top: 66.66%; /* 3:2 Verhältnis, Höhe über padding trick */
+  background: #e9e9e9;
+  border-radius: 12px;
+  border: 4px solid #f5f5f5;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  position: relative;
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.puzzle-card:focus { outline: none; box-shadow: 0 10px 24px rgba(0,0,0,0.12); transform: translateY(-4px); }
+.puzzle-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.14); }
+.puzzle-card::after { content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0; border-radius: 8px; }
+
+/* ensure default button text is readable (not only on hover) */
+.btn { color: #212529; }
+
+/* Make nav buttons (Home / Auswählen) always have white text */
+.nav-btn,
+.nav-btn * {
+  color: #ffffff !important;
+}
+
+/* Auswahl-Buttons im Einstellungen-Modal */
+#settingsModal .count-btn.selected {
+  background-color: #234f3f !important;
+  color: #ffffff !important;
+  border-color: #234f3f !important;
+}
+
+/* Farben für Buttons im Einstellungen-Modal */
+#settingsModal #save-settings,
+#settingsModal #restart-btn {
+  background-color: #7ca38e;
+  color: #ffffff;
+  border-color: #7ca38e;
+}
+#settingsModal #save-settings:hover,
+#settingsModal #restart-btn:hover {
+  background-color: #6f927a; /* leicht dunkler beim Hover */
+  border-color: #6f927a;
+  color: #ffffff;
+}
+
+#settingsModal #next-puzzle-btn {
+  background-color: #e5943f;
+  color: #ffffff;
+  border-color: #e5943f;
+}
+#settingsModal #next-puzzle-btn:hover {
+  background-color: #d27f2d; /* leicht dunkler beim Hover */
+  border-color: #d27f2d;
+  color: #ffffff;
+}
+
+/* Victory modal next button custom color */
+#victory-next-btn {
+  background-color: #d27f2d; /* requested color */
+  border-color: #d27f2d;
+  color: #ffffff;
+  border-radius: 999px; /* very rounded */
+  padding: 0.45rem 1rem;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: background-color 120ms ease, transform 120ms ease;
+}
+#victory-next-btn:hover,
+#victory-next-btn:focus {
+  background-color: #bf6f24; /* slightly darker */
+  border-color: #bf6f24;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Hinweis für fehlende Puzzlestücke */
+.thumb.empty-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 0.9rem;
+  background: #f7f7f7;
+  border: 1px dashed #ccc;
+  cursor: default;
+}
+
+/* Thumbnails-Leiste horizontal scrollen */
+.thumbs-bar {
+  width: 100%;
+}
+.thumbs-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+.thumbs {
+  display: inline-flex;
+  gap: 8px;
+  align-items: stretch;
+  width: max-content;
+}
+.thumb {
+  flex: 0 0 auto;
+}

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spiel konfigurieren</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/bootstrap.js"></script>
+</head>
+<body>
+  <!-- Übernommene Navigationsleiste von index.html -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
+      <div class="container">
+          <a class="navbar-brand" href="#">Puzzle</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="#navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                      <a class="btn nav-btn d-inline-flex align-items-center" href="index.html" role="button">Home</a>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+
+  <main class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="config-container">
+      <h1 class="h5 text-center mb-3">Spiel konfigurieren</h1>
+
+      <div class="panel difficulty-panel mb-3">
+        <div class="panel-title">Schwierigkeit</div>
+        <div class="panel-body d-flex gap-2">
+          <button class="btn btn-outline-secondary difficulty-btn" data-difficulty="leicht">Leicht</button>
+          <button class="btn btn-outline-secondary difficulty-btn" data-difficulty="mittel">Mittel</button>
+          <button class="btn btn-outline-secondary difficulty-btn" data-difficulty="schwer">Schwer</button>
+        </div>
+      </div>
+
+      <div class="panel size-panel mb-3">
+        <div class="panel-title">Puzzle-Größe</div>
+        <div class="panel-body d-flex gap-2 flex-wrap">
+          <button class="btn btn-outline-secondary size-btn" data-size="4">4</button>
+          <button class="btn btn-outline-secondary size-btn" data-size="16">16</button>
+          <button class="btn btn-outline-secondary size-btn" data-size="32">32</button>
+          <button class="btn btn-outline-secondary size-btn" data-size="64">64</button>
+        </div>
+      </div>
+
+      <!-- Bild-Upload Bereich -->
+      <div class="mb-3">
+        <label for="image-upload" class="form-label">Bild hochladen</label>
+        <input class="form-control" type="file" id="image-upload" accept="image/*">
+        <div id="image-feedback" class="form-text text-muted small">Bilder werden bei Bedarf zugeschnitten oder verkleinert, damit sie ins Raster passen.</div>
+        <div class="mt-2 text-center">
+          <img id="image-preview" src="" alt="Vorschau" style="max-width:100%;max-height:200px;display:none;border-radius:8px;"/>
+        </div>
+      </div>
+
+      <div class="text-center mt-2">
+        <button id="start-game" class="btn cta-btn">Jetzt spielen</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/imageSlicer.js"></script>
+  <script src="js/configGame.js"></script>
+</body>
+</html>

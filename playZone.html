@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Play Zone</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/bootstrap.js"></script>
+</head>
+<body>
+  <!-- Navbar (wie index.html) + zusätzliches Einstellungen-Symbol -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container">
+      <a class="navbar-brand" href="#">Puzzle</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="#navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item me-2">
+            <a class="btn nav-btn d-inline-flex align-items-center" href="index.html" role="button">Home</a>
+          </li>
+          <li class="nav-item">
+            <!-- grüner Button (wie .nav-btn) bleibt, daneben ein Einstellungs-Icon -->
+            <div class="d-flex align-items-center">
+              <button class="btn settings-btn" id="open-settings" title="Einstellungen"><span class="settings-icon" aria-hidden="true">⚙</span><span class="visually-hidden">Einstellungen</span></button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="d-flex flex-column align-items-center">
+      <div id="selection-info" class="mb-3 text-muted small"></div>
+
+      <div class="frame mb-4">
+        <div class="puzzle-placeholder" aria-hidden="true">
+          <!-- Grid für Platzieren von Puzzleteilen -->
+          <div id="puzzle-grid" class="puzzle-grid" role="grid" aria-label="Puzzle-Feld"></div>
+        </div>
+      </div>
+
+      <div class="thumbs-bar d-flex align-items-center w-100">
+        <button class="btn arrow-btn me-2" id="thumbs-left">❮</button>
+        <div class="thumbs-container flex-grow-1">
+          <div class="thumbs" id="thumbs">
+            <!-- thumbnails werden hier von JS eingefügt -->
+          </div>
+        </div>
+        <button class="btn arrow-btn ms-2" id="thumbs-right">❯</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Einstellungen-Modal -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="settingsModalLabel">Einstellungen</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+        </div>
+        <div class="modal-body">
+          <p>Wieviele Puzzleteile sollen sichtbar sein, bevor gescrollt wird?</p>
+          <div class="d-flex gap-2 mb-3" id="count-options">
+            <button type="button" class="btn btn-outline-secondary count-btn" data-count="4">4</button>
+            <button type="button" class="btn btn-outline-secondary count-btn" data-count="6">6</button>
+            <button type="button" class="btn btn-outline-secondary count-btn" data-count="8">8</button>
+            <button type="button" class="btn btn-outline-secondary count-btn" data-count="10">10</button>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary" id="save-settings">Speichern</button>
+            <button type="button" class="btn btn-outline-danger" id="restart-btn">Neustart</button>
+            <button type="button" class="btn btn-outline-primary ms-auto" id="next-puzzle-btn">Nächstes Puzzle</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory Modal: shown when puzzle is completed correctly -->
+  <div class="modal fade" id="victoryModal" tabindex="-1" aria-labelledby="victoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="victoryModalLabel">Herzlichen Glückwunsch!</h5>
+        </div>
+        <div class="modal-body text-center">
+          <p>Du hast das Puzzle korrekt zusammengesetzt.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="victory-next-btn" class="btn btn-primary">Nächstes Puzzle konfigurieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/playZone.js"></script>
+</body>
+</html>
