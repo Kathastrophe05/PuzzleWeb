@@ -150,6 +150,33 @@ document.addEventListener('DOMContentLoaded', function () {
     pieces = pieces.slice(0, expectedPieces);
   }
 
+  // If no pieces were found, create simple placeholder pieces so the UI shows a puzzle
+  function createPlaceholderPieces(n) {
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const w = 240, h = 160;
+      const bgHue = Math.floor((i * 137) % 360); // varied colors
+      const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'>` +
+                  `<rect width='100%' height='100%' fill='hsl(${bgHue} 60% 70%)'/>` +
+                  `<text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='36' fill='#333' font-family='Arial, sans-serif'>Teil ${i+1}</text>` +
+                  `</svg>`;
+      const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      out.push(dataUrl);
+    }
+    return out;
+  }
+
+  // If no pieces exist but we have a requested size, generate placeholders and persist them
+  if ((!pieces || pieces.length === 0) && expectedPieces && expectedPieces > 0) {
+    console.debug('No pieces found; generating', expectedPieces, 'placeholder pieces');
+    pieces = createPlaceholderPieces(expectedPieces);
+    try {
+      localStorage.setItem(PIECES_KEY, JSON.stringify(pieces));
+      // clear any old placements so grid will initialize clean
+      localStorage.removeItem(PLACEMENTS_KEY);
+    } catch (e) { console.error('Failed to save placeholder pieces to localStorage', e); }
+  }
+
   // Fallback-Objekt für Drag-Informationen (sicherer als allein dataTransfer)
   let currentDrag = null;
 
