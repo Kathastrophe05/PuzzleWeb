@@ -1,6 +1,6 @@
 /**
  * Utility zum Zerschneiden eines PNG/JPEG (File oder DataURL) in N Teile (Raster) und Speichern der Teile.
- * Browser-API (keine Module) - stellt ein globales Objekt `ImageSlicer` bereit.
+ * Browser API stellt ein globales Objekt `ImageSlicer` bereit.
  *
  * Funktionen:
  *  - readFileAsDataURL(file): Promise<string>  // File -> DataURL
@@ -47,7 +47,7 @@
    * @returns {Promise<string[]>} - löst mit einem Array von Data-URLs auf, Länge === n (oder weniger bei Eingabefehlern)
    */
   ImageSlicer.sliceImageToPieces = async function (input, n, options) {
-    if (!n || typeof n !== 'number' || n <= 0) throw new TypeError('n must be a positive integer');
+    if (!n || typeof n !== 'number' || n <= 0) throw new TypeError('n muss positive integer sein');
     options = Object.assign({ mime: 'image/png', quality: 0.92, maxSide: 1400, stretchToRatio: true, targetRatio: null }, options || {});
 
     let dataUrl = null;
@@ -56,7 +56,7 @@
     } else if (input instanceof File) {
       dataUrl = await ImageSlicer.readFileAsDataURL(input);
     } else {
-      throw new TypeError('input must be a DataURL string or a File');
+      throw new TypeError('input muss DataURL string oder File sein');
     }
 
     return new Promise((resolve, reject) => {
@@ -76,7 +76,7 @@
           let targetW = Math.max(1, Math.round(w * baseScale));
           let targetH = Math.max(1, Math.round(h * baseScale));
 
-          // Stretch (non-uniform) to reach grid ratio without cropping
+          // strecken
           if (options.stretchToRatio && targetRatio > 0) {
             const currentRatio = targetW / targetH;
             if (Math.abs(currentRatio - targetRatio) > 0.01) {
@@ -88,7 +88,6 @@
             }
           }
 
-          // Re-apply maxSide cap if stretching exceeded it
           const postMaxDim = Math.max(targetW, targetH);
           if (postMaxDim > maxSide) {
             const adjust = maxSide / postMaxDim;
@@ -96,7 +95,6 @@
             targetH = Math.max(1, Math.round(targetH * adjust));
           }
 
-          // draw scaled (possibly stretched) canvas once, slice from it
           const baseCanvas = document.createElement('canvas');
           baseCanvas.width = targetW;
           baseCanvas.height = targetH;
@@ -149,16 +147,15 @@
   ImageSlicer.savePiecesToLocalStorage = function (key, pieces) {
     try {
       const json = JSON.stringify(pieces);
-      // quick size check (rough) - localStorage limits vary; alert developer if large
       const bytes = new Blob([json]).size;
       const maxWarning = 3 * 1024 * 1024; // 3MB
       if (bytes > maxWarning) {
-        console.warn(`Saving pieces (~${Math.round(bytes / 1024)} KB) may exceed localStorage limits. Consider IndexedDB.`);
+        console.warn(`Speichere Teile (~${Math.round(bytes / 1024)} KB) vieleicht zu groess fuer lokal storage.`);
       }
       localStorage.setItem(key, json);
       return true;
     } catch (err) {
-      console.error('Failed to save pieces to localStorage', err);
+      console.error('speichern fehlgeschlagen', err);
       return false;
     }
   };
@@ -174,7 +171,7 @@
       if (!json) return null;
       return JSON.parse(json);
     } catch (err) {
-      console.error('Failed to load pieces from localStorage', err);
+      console.error('laden fehlgeschlagen', err);
       return null;
     }
   };

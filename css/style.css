@@ -174,7 +174,7 @@ main.container {
   border-radius: 10px;
 }
 
-/* Bild-Vorschau: kleine Anpassung damit sie sich ins Grid einfügt */
+/* Bild-Vorschau */
 .config-container #image-preview {
   max-width: 100%;
   max-height: 200px;
@@ -184,7 +184,7 @@ main.container {
   border-radius: 8px;
 }
 
-/* Button-Wrapper: keine zusätzliche top-margin mehr */
+/* Button-Wrapper */
 .config-container .text-center { margin: 0 !important; }
 
 /* Selected state für Buttons in der Config-Seite */
@@ -199,7 +199,7 @@ main.container {
   transition: transform 120ms ease, box-shadow 160ms ease;
 }
 
-/* Fallback: auch über aria-pressed unterstützen (Accessibility) */
+/* Fallback */
 .config-container .btn.size-btn[aria-pressed="true"],
 .config-container .btn.difficulty-btn[aria-pressed="true"],
 .config-container .btn[aria-pressed="true"] {
@@ -220,7 +220,7 @@ main.container {
 }
 
 .frame {
-  background: transparent; /* kein sichtbarer Hintergrund, Rahmen sitzt am Platzhalter */
+  background: transparent;
   border-radius: var(--frame-radius);
   border: none;
   padding: 0;

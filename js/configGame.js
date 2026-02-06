@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /** Größe-Auswahl-Buttons */
+  /** Bild-Größe-Auswahl-Buttons */
   sizeButtons.forEach(btn => {
     btn.addEventListener('click', function () {
       sizeButtons.forEach(b => b.classList.remove('selected'));
@@ -77,12 +77,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       if (!file.type || !file.type.startsWith('image/')) {
-        setFeedback('Bitte ein Bildformat wählen (png/jpg/webp).', true);
+        setFeedback('Bitte eine Bilddatei mit Unterstütztem Format wählen (png, jpg)', true);
         imageInput.value = '';
         return;
       }
       if (file.size > MAX_FILE_SIZE) {
-        setFeedback('Bild ist groß – wird zugeschnitten und verkleinert.', false);
+        setFeedback('Bild ist zu groß – wird zugeschnitten und verkleinert.', false);
       } else {
         setFeedback('Bild geladen. Passt nicht? Wir schneiden es passend zu.', false);
       }
@@ -98,7 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // entferne alte Daten im localStorage
+  // entferne alte Daten aus localStorage
+  // Slice neues Bild und speichere die Teile im localStorage
+  // weiterleiten mit Query-Parametern
   startButton.addEventListener('click', async function () {
     if (!selectedSize) {
       startButton.classList.add('invalid');
@@ -123,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem('puzzlePieces', JSON.stringify(pieces));
             localStorage.removeItem('puzzlePlacements');
           } else {
-            console.warn('No ImageSlicer available and no fallback slicing function found.');
+            console.warn('ImageSlicer nicht verfügbar, kein Bild-Zuschnitt möglich');
             setFeedback('Fehler: Kein Bild-Zuschnitt verfügbar.', true);
           }
         }
