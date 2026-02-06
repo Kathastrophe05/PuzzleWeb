@@ -1,5 +1,5 @@
 /**
- * Hauptlogik für die Spielzone: Verwaltung von Drag-and-Drop, Thumbnail-Leiste, Grid-Layout und Siegprüfung.
+ * JS: Hauptlogik für die Spielzone: Verwaltung von Drag-and-Drop, Thumbnail-Leiste, Grid-Layout und Siegprüfung.
  *
  * Funktionen:
  * - Dynamische Anpassung der Thumbnail-Größe basierend auf der Containerbreite und der Anzahl sichtbarer Thumbnails.
